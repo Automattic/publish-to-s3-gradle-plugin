@@ -28,8 +28,8 @@ open class CheckS3VersionTask : DefaultTask() {
     @TaskAction
     fun process() {
         when (responseCodeForUrl(pomUrl)) {
-            200 -> println("This version is uploaded at url: $pomUrl")
-            403 -> println("This version is not uploaded to url: $pomUrl")
+            200 -> println("true")
+            403 -> println("false")
             else -> handleUnexpectedResponseCode()
         }
     }
