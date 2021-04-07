@@ -12,10 +12,6 @@ open class CheckS3VersionTask : DefaultTask() {
 
     @TaskAction
     fun process() {
-        if (packagePath.isNullOrEmpty()) {
-            //throw java.lang.IllegalArgumentException("packagePath can not be null or empty")
-        }
-
         println("packagePath argument: $packagePath")
     }
 }
