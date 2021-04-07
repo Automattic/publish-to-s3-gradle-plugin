@@ -12,10 +12,7 @@ class PublishToS3Plugin: Plugin<Project> {
             }
         }
 
-        project.tasks.register("isVersionPublishedToS3", CheckS3VersionTask::class.java) { task ->
-            task.doLast {
-                println("hello from check version")
-            }
+        project.tasks.register("isVersionPublishedToS3", CheckS3VersionTask::class.java) { _ ->
         }
     }
 }
