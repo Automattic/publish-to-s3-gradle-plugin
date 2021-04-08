@@ -37,6 +37,7 @@ open class CalculateVersionNameTask : DefaultTask() {
         } else if (pullRequestUrl.isNotEmpty()) {
             "${pullRequestUrl.substringAfterLast("/")}-$sha1"
         } else {
+            // TODO: Improve this error message
             throw IllegalStateException("Don't publish")
         }
 }
