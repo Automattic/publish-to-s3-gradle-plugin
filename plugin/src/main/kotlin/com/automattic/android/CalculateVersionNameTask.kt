@@ -8,11 +8,11 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 
-private const val branchNameArgumentName = "branch-name"
-private const val sha1ArgumentName = "sha1"
+private const val BRANCH_NAME_ARGUMENT_NAME = "branch-name"
+private const val SHA1_ARGUMENT_NAME = "sha1"
 
 private val requiredArgumentsErrorMessage: String by lazy {
-    "--$branchNameArgumentName={branch-name} --$sha1ArgumentName={sha1-commit-hash}" +
+    "--$BRANCH_NAME_ARGUMENT_NAME={branch-name} --$SHA1_ARGUMENT_NAME={sha1-commit-hash}" +
         " command line arguments are required"
 }
 
@@ -29,11 +29,13 @@ open class CalculateVersionNameTask : DefaultTask() {
     var tagName: String = ""
 
     @Input
-    @Option(option = branchNameArgumentName, description = "The name of the Git branch currently being built")
+    @Option(option = BRANCH_NAME_ARGUMENT_NAME,
+        description = "The name of the Git branch currently being built")
     var branchName: String = ""
 
     @Input
-    @Option(option = sha1ArgumentName, description = "The SHA1 hash of the last commit of the current build")
+    @Option(option = SHA1_ARGUMENT_NAME,
+        description = "The SHA1 hash of the last commit of the current build")
     var sha1: String = ""
 
     @Input

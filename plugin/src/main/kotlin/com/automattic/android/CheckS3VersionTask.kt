@@ -9,6 +9,9 @@ import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 
+private const val SUCCESS_STATUS_CODE = 200
+private const val FAILURE_STATUS_CODE = 403
+
 open class CheckS3VersionTask : DefaultTask() {
     @Internal
     override fun getDescription(): String = "Checks if a version is already published to S3"
@@ -33,8 +36,8 @@ open class CheckS3VersionTask : DefaultTask() {
     @TaskAction
     fun process() {
         when (responseCodeForUrl(pomUrl)) {
-            200 -> println("true")
-            403 -> println("false")
+            SUCCESS_STATUS_CODE -> println("true")
+            FAILURE_STATUS_CODE -> println("false")
             else -> handleUnexpectedResponseCode()
         }
     }
@@ -48,15 +51,16 @@ open class CheckS3VersionTask : DefaultTask() {
 
     private fun handleUnexpectedResponseCode() {
         throw IllegalStateException(
-"""An unexpected response code received with the following information. Please contact Platform 9 team if this issue persists.
+            "An unexpected response code received with the following information. " +
+                "Please contact Platform 9 team if this issue persists.\n\n" +
 
---Input--
-publishedGroupId: $publishedGroupId
-moduleName: $moduleName
-versionName: $versionName
+                "--Input--\n" +
+                "publishedGroupId: $publishedGroupId\n" +
+                "moduleName: $moduleName\n" +
+                "versionName: $versionName\n\n" +
 
---Calculated--
-POM url: $pomUrl
-""")
+                "--Calculated--\n" +
+                "POM url: $pomUrl\n"
+        )
     }
 }

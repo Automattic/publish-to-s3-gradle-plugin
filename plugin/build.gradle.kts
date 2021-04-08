@@ -1,13 +1,11 @@
 plugins {
-    // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     `java-gradle-plugin`
 
-    // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.4.32"
+    id("io.gitlab.arturbosch.detekt").version("1.16.0")
 }
 
 repositories {
-    // Use JCenter for resolving dependencies.
     jcenter()
 }
 
@@ -36,7 +34,6 @@ gradlePlugin {
 
 // Add a source set for the functional test suite
 val functionalTestSourceSet = sourceSets.create("functionalTest")
-
 gradlePlugin.testSourceSets(functionalTestSourceSet)
 configurations["functionalTestImplementation"].extendsFrom(configurations["testImplementation"])
 
@@ -48,4 +45,12 @@ val functionalTest by tasks.registering(Test::class) {
 
 tasks.check {
     dependsOn(functionalTest)
+}
+
+detekt {
+    buildUponDefaultConfig = true
+
+    reports {
+        html.enabled = true
+    }
 }
