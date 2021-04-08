@@ -4,14 +4,14 @@ import com.automattic.android.publish.BuildEnvironment
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-const val developBranchName = "develop"
-const val trunkBranchName = "trunk"
-const val randomBranchName = "issue/branch-name"
+private const val developBranchName = "develop"
+private const val trunkBranchName = "trunk"
+private const val randomBranchName = "issue/branch-name"
 
-const val tagName = "tag-123"
-const val sha1 = "d40bd62a4d5566bf9681ecfd177e867f7b2ff3f9"
-const val pullRequestNumber = "63"
-const val pullRequestUrl = "https://github.com/wordpress-mobile/WordPress-Utils-Android/pull/$pullRequestNumber"
+private const val tagName = "tag-123"
+private const val sha1 = "d40bd62a4d5566bf9681ecfd177e867f7b2ff3f9"
+private const val pullRequestNumber = "63"
+private const val pullRequestUrl = "https://github.com/wordpress-mobile/WordPress-Utils-Android/pull/$pullRequestNumber"
 
 class BuildEnvironmentTest {
     @Test

@@ -16,7 +16,6 @@ fun publishToS3PluginFunctionalTestRunnerWithArguments(vararg arguments: String)
     val runner = GradleRunner.create()
     runner.forwardOutput()
     runner.withPluginClasspath()
-    // TODO: Once a proper version is published to S3, we should update the `versionName`
     runner.withArguments(arguments.toList())
     runner.withProjectDir(projectDir)
     return runner

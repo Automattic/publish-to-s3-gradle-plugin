@@ -7,9 +7,7 @@ import org.gradle.api.Plugin
 
 class PublishToS3Plugin: Plugin<Project> {
     override fun apply(project: Project) {
-        project.tasks.register("calculateVersionName", CalculateVersionNameTask::class.java) { _ ->
-        }
-        project.tasks.register("isVersionPublishedToS3", CheckS3VersionTask::class.java) { _ ->
-        }
+        project.tasks.register("calculateVersionName", CalculateVersionNameTask::class.java)
+        project.tasks.register("isVersionPublishedToS3", CheckS3VersionTask::class.java)
     }
 }

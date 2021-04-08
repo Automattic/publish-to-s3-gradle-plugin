@@ -5,6 +5,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 
 private const val branchNameArgumentName = "branch-name"
@@ -16,6 +17,9 @@ private val requiredArgumentsErrorMessage: String by lazy {
 }
 
 open class CalculateVersionNameTask : DefaultTask() {
+    @Internal
+    override fun getDescription(): String = "Calculates the version name from the given arguments"
+
     @Input
     @Option(option = "tag-name",
         description = "The name of the git tag, if the current build is tagged")

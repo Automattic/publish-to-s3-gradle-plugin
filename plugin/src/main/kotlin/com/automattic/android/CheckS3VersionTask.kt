@@ -7,23 +7,27 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 
-// TODO: Update descriptions
 open class CheckS3VersionTask : DefaultTask() {
-    @Input
-    @Option(description = "Configures the package path")
-    lateinit var packagePath: String
+    @Internal
+    override fun getDescription(): String = "Checks if a version is already published to S3"
 
     @Input
-    @Option(description = "")
-    lateinit var moduleName: String
+    @Option(option = "published-group-id", description = "Group id used to publish the artifacts")
+    var publishedGroupId: String = ""
 
     @Input
-    @Option(description = "")
-    lateinit var versionName: String
+    @Option(option = "module-name", description = "Module name of the published artifacts")
+    var moduleName: String = ""
+
+    @Input
+    @Option(option = "version-name", description = "Version name to be checked")
+    var versionName: String = ""
 
     private val pomUrl: String by lazy {
-        "https://a8c-libs.s3.amazonaws.com/android/${packagePath.replace(".", "/")}/$versionName/$moduleName-${versionName}.pom"
+        "https://a8c-libs.s3.amazonaws.com/android/${publishedGroupId.replace(".", "/")}" +
+            "/$versionName/$moduleName-${versionName}.pom"
     }
 
     @TaskAction
@@ -47,7 +51,7 @@ open class CheckS3VersionTask : DefaultTask() {
 """An unexpected response code received with the following information. Please contact Platform 9 team if this issue persists.
 
 --Input--
-packagePath: $packagePath
+publishedGroupId: $publishedGroupId
 moduleName: $moduleName
 versionName: $versionName
 
