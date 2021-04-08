@@ -25,18 +25,15 @@ open class CalculateVersionNameTask : DefaultTask() {
     @Option(description = "The URL of the associated pull request")
     lateinit var pullRequestUrl: String
 
-    val buildEnvironment: BuildEnvironment by lazy {
-        BuildEnvironment(
+    @TaskAction
+    fun process() {
+        val buildEnvironment = BuildEnvironment(
             tagName = tagName,
             branchName = branchName,
             sha1 = sha1,
             pullRequestUrl = pullRequestUrl
         )
-    }
-
-    @TaskAction
-    fun process() {
-         // TODO: Improve this error message
+        // TODO: Improve this error message
         val versionName = buildEnvironment.calculateVersionName()
             ?: throw IllegalStateException("Don't publish")
         println("${versionName}")

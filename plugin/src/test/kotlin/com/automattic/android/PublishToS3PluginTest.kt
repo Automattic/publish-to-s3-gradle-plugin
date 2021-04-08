@@ -5,7 +5,8 @@ import kotlin.test.Test
 import kotlin.test.assertNotNull
 
 class PublishToS3PluginTest {
-    @Test fun `plugin registers task`() {
+    @Test
+    fun `plugin registers task`() {
         // Create a test project and apply the plugin
         val project = ProjectBuilder.builder().build()
         project.plugins.apply("com.automattic.android.publish-to-s3")
