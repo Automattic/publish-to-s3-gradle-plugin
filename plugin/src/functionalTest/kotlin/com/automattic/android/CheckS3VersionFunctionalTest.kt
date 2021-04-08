@@ -19,7 +19,7 @@ class CheckS3VersionFunctionalTest {
     }
 
     @Test
-    fun `verify version does not exists`() {
+    fun `verify version does not exist`() {
         val runner = publishToS3PluginFunctionalTestRunnerWithArguments("-q",
             "isVersionPublishedToS3", "--published-group-id=org.wordpress.utils",
             "--module-name=utils", "--version-name=thisversiondoesntexist")

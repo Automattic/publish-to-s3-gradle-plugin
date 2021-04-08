@@ -16,6 +16,9 @@ private val requiredArgumentsErrorMessage: String by lazy {
         " command line arguments are required"
 }
 
+private const val DONT_PUBLISH_ERROR_MESSAGE = "Since this build is not from a tag and it's on a " +
+    "branch without a pull request url, it shouldn't be published to S3."
+
 open class CalculateVersionNameTask : DefaultTask() {
     @Internal
     override fun getDescription(): String = "Calculates the version name from the given arguments"
@@ -41,9 +44,8 @@ open class CalculateVersionNameTask : DefaultTask() {
     fun process() {
         val buildEnvironment = validateArguments()
 
-        // TODO: Improve this error message
         val versionName = buildEnvironment.calculateVersionName()
-            ?: throw IllegalStateException("Don't publish")
+            ?: throw IllegalStateException(DONT_PUBLISH_ERROR_MESSAGE)
         println("${versionName}")
     }
 
