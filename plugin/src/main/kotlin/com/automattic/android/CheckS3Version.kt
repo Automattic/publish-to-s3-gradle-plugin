@@ -8,6 +8,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.Input
 
+// TODO: Update descriptions
 open class CheckS3VersionTask : DefaultTask() {
     @Input
     @Option(description = "Configures the package path")
