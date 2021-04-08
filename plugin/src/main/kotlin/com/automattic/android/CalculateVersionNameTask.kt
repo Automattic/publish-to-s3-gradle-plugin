@@ -1,5 +1,6 @@
 package com.automattic.android.publish
 
+import com.automattic.android.publish.BuildEnvironment
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
@@ -9,7 +10,7 @@ import org.gradle.api.tasks.Optional
 open class CalculateVersionNameTask : DefaultTask() {
     @Input
     @Option(option = "tagName",
-        description = "The name of the git tag, if the current build is tagged.")
+        description = "The name of the git tag, if the current build is tagged")
     var tagName: String = ""
 
     @Input
@@ -24,20 +25,20 @@ open class CalculateVersionNameTask : DefaultTask() {
     @Option(description = "The URL of the associated pull request")
     lateinit var pullRequestUrl: String
 
-    @TaskAction
-    fun process() {
-        println("${calculateVersionName()}")
+    val buildEnvironment: BuildEnvironment by lazy {
+        BuildEnvironment(
+            tagName = tagName,
+            branchName = branchName,
+            sha1 = sha1,
+            pullRequestUrl = pullRequestUrl
+        )
     }
 
-    private fun calculateVersionName() =
-        if (tagName.isNotEmpty()) {
-            tagName
-        } else if (branchName == "develop" || branchName == "trunk") {
-            "$branchName-$sha1"
-        } else if (pullRequestUrl.isNotEmpty()) {
-            "${pullRequestUrl.substringAfterLast("/")}-$sha1"
-        } else {
-            // TODO: Improve this error message
-            throw IllegalStateException("Don't publish")
-        }
+    @TaskAction
+    fun process() {
+         // TODO: Improve this error message
+        val versionName = buildEnvironment.calculateVersionName()
+            ?: throw IllegalStateException("Don't publish")
+        println("${versionName}")
+    }
 }
