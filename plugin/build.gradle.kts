@@ -10,6 +10,7 @@ repositories {
 }
 
 group = "com.automattic.android"
+version = "0.1"
 
 dependencies {
     // Align versions of all Kotlin components
@@ -57,17 +58,7 @@ detekt {
 
 val awsAccessKey: String? by project
 val awsSecretKey: String? by project
-val publishVersion: String? by project
 publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "com.automattic.android" 
-            artifactId = "publish-to-s3"
-            version = publishVersion ?: "unspecified"
-
-            from(components["java"])
-        }
-    }
     repositories {
         maven {
             url = uri("s3://a8c-libs.s3.amazonaws.com/android")
