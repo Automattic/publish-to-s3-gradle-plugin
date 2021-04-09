@@ -1,8 +1,8 @@
 plugins {
-    `java-gradle-plugin`
-
+    id("java-gradle-plugin")
     id("org.jetbrains.kotlin.jvm") version "1.4.32"
     id("io.gitlab.arturbosch.detekt").version("1.16.0")
+    id("maven-publish")
 }
 
 repositories {
@@ -52,5 +52,29 @@ detekt {
 
     reports {
         html.enabled = true
+    }
+}
+
+val awsAccessKey: String? by project
+val awsSecretKey: String? by project
+val publishVersion: String? by project
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.automattic.android" 
+            artifactId = "publish-to-s3"
+            version = publishVersion ?: "unspecified"
+
+            from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            url = uri("s3://a8c-libs.s3.amazonaws.com/android")
+            credentials(AwsCredentials::class) {
+                accessKey = awsAccessKey ?: System.getenv("AWS_ACCESS_KEY")
+                secretKey = awsSecretKey ?: System.getenv("AWS_SECRET_KEY")
+            }
+        }
     }
 }
