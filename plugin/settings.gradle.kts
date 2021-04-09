@@ -1,1 +1,1 @@
-rootProject.name = "plugin"
+rootProject.name = "publish-to-s3"
