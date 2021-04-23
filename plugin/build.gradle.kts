@@ -27,7 +27,7 @@ dependencies {
 }
 
 gradlePlugin {
-    plugins.register("publish") {
+    plugins.register("publish-to-s3") {
         id = "com.automattic.android.publish-to-s3"
         implementationClass = "com.automattic.android.publish.PublishToS3Plugin"
     }
