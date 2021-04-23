@@ -28,7 +28,6 @@ class BuildEnvironmentTest {
 
     @Test
     fun `returns {develop-sha1} for empty tag on develop branch`() {
-        val tagName = "tag-123"
         val buildEnv = BuildEnvironment(
             tagName = null,
             branchName = developBranchName,
@@ -40,7 +39,6 @@ class BuildEnvironmentTest {
 
     @Test
     fun `returns {trunk-sha1} for empty tag on trunk branch`() {
-        val tagName = "tag-123"
         val buildEnv = BuildEnvironment(
             tagName = null,
             branchName = trunkBranchName,
@@ -52,7 +50,6 @@ class BuildEnvironmentTest {
 
     @Test
     fun `returns {pullRequestNumber-sha1} for empty tag on random branch`() {
-        val tagName = "tag-123"
         val buildEnv = BuildEnvironment(
             tagName = null,
             branchName = randomBranchName,
@@ -64,7 +61,6 @@ class BuildEnvironmentTest {
 
     @Test
     fun `returns null for empty tag and empty pull request url on random branch`() {
-        val tagName = "tag-123"
         val buildEnv = BuildEnvironment(
             tagName = null,
             branchName = randomBranchName,
