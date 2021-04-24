@@ -12,7 +12,7 @@ class CheckS3VersionFunctionalTest {
     fun `verify version exists`() {
        // TODO: Once a proper version is published to S3, we should update the `versionName`
         val runner = publishToS3PluginFunctionalTestRunnerWithArguments("-q",
-            "isVersionPublishedToS3", "--published-group-id=org.wordpress.utils",
+            "isVersionPublishedToS3", "--published-group-id=org.wordpress",
             "--module-name=utils", "--version-name=68-4f34ac114ea99eaac229428e2c416735e430d3d8")
         val result = runner.build()
         assertTrue(result.output.trim().toBoolean())

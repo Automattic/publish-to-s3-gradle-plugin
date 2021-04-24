@@ -29,8 +29,8 @@ open class CheckS3VersionTask : DefaultTask() {
     var versionName: String = ""
 
     private val pomUrl: String by lazy {
-        "https://a8c-libs.s3.amazonaws.com/android/${publishedGroupId.replace(".", "/")}" +
-            "/$versionName/$moduleName-${versionName}.pom"
+        "https://a8c-libs.s3.amazonaws.com/android/${publishedGroupId.replace(".", "/")}/" +
+            "$moduleName/$versionName/$moduleName-${versionName}.pom"
     }
 
     @TaskAction
