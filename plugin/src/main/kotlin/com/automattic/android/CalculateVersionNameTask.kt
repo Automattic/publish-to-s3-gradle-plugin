@@ -8,17 +8,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 
-private const val BRANCH_NAME_ARGUMENT_NAME = "branch-name"
-private const val SHA1_ARGUMENT_NAME = "sha1"
-
-private val requiredArgumentsErrorMessage: String by lazy {
-    "--$BRANCH_NAME_ARGUMENT_NAME={branch-name} --$SHA1_ARGUMENT_NAME={sha1-commit-hash}" +
-        " command line arguments are required"
-}
-
-private const val DONT_PUBLISH_ERROR_MESSAGE = "Since this build is not from a tag and it's on a " +
-    "branch without a pull request url, it shouldn't be published to S3."
-
 abstract class CalculateVersionNameTask : DefaultTask() {
     @Internal
     override fun getDescription(): String = "Calculates the version name from the given arguments"
@@ -44,23 +33,8 @@ abstract class CalculateVersionNameTask : DefaultTask() {
 
     @TaskAction
     fun process() {
-        val buildEnvironment = validateArguments()
-
-        val versionName = buildEnvironment.calculateVersionName()
-            ?: throw IllegalStateException(DONT_PUBLISH_ERROR_MESSAGE)
+        val versionName = BuildEnvironment(tagName, branchName, sha1, pullRequestUrl).calculateVersionName()
         println("${versionName}")
     }
-
-    private fun validateArguments(): BuildEnvironment {
-        require(branchName.isNotEmpty() && sha1.isNotEmpty()) {
-            requiredArgumentsErrorMessage
-        }
-
-        return BuildEnvironment(
-            tagName = tagName,
-            branchName = branchName,
-            sha1 = sha1,
-            pullRequestUrl = pullRequestUrl
-        )
-    }
 }
+
