@@ -8,6 +8,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.credentials.AwsCredentials
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import java.net.URI
 
 class PublishToS3Plugin: Plugin<Project> {
@@ -25,6 +26,8 @@ class PublishToS3Plugin: Plugin<Project> {
         project.tasks.register("publishToS3", PublishToS3Task::class.java) {
             it.publishedGroupId = extension.groupId.get()
             it.moduleName = extension.artifactId.get()
+
+            it.finalizedBy(project.tasks.named("publishS3PublicationToS3Repository"))
         }
 
         project.afterEvaluate { p ->
@@ -43,6 +46,17 @@ class PublishToS3Plugin: Plugin<Project> {
                 mavenRepo.credentials(AwsCredentials::class.java) {
                     it.setAccessKey(System.getenv("AWS_ACCESS_KEY"))
                     it.setSecretKey(System.getenv("AWS_SECRET_KEY"))
+                }
+            }
+
+            p.tasks.withType(PublishToMavenRepository::class.java) { task ->
+                task.onlyIf {
+                    val state = p.tasks.getByName("publishToS3").state
+                    val shouldProceed = state.executed && state.failure == null
+                    if (!shouldProceed) {
+                        throw IllegalStateException("Publish tasks shouldn't be directly called. Please call 'publishToS3' task instead.")
+                    }
+                    shouldProceed
                 }
             }
         }
