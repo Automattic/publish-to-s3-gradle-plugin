@@ -12,7 +12,7 @@ import org.gradle.api.tasks.Internal
 private const val SUCCESS_STATUS_CODE = 200
 private const val FAILURE_STATUS_CODE = 403
 
-open class CheckS3VersionTask : DefaultTask() {
+abstract class CheckS3VersionTask : DefaultTask() {
     @Internal
     override fun getDescription(): String = "Checks if a version is already published to S3"
 

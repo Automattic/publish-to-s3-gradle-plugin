@@ -19,7 +19,7 @@ private val requiredArgumentsErrorMessage: String by lazy {
 private const val DONT_PUBLISH_ERROR_MESSAGE = "Since this build is not from a tag and it's on a " +
     "branch without a pull request url, it shouldn't be published to S3."
 
-open class CalculateVersionNameTask : DefaultTask() {
+abstract class CalculateVersionNameTask : DefaultTask() {
     @Internal
     override fun getDescription(): String = "Calculates the version name from the given arguments"
 
