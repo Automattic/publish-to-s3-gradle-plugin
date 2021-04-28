@@ -35,15 +35,6 @@ class PublishToS3Plugin: Plugin<Project> {
         project.tasks.register("publishToS3", PublishToS3Task::class.java) {
             it.publishedGroupId = extension.groupId.get()
             it.moduleName = extension.artifactId.get()
-
-            it.doLast {
-                project.getExtensions().getByType(PublishingExtension::class.java).publications.withType(MavenPublication::class.java).forEach {
-                    val updatedVersion = extraProperties.get("s3PublishVersion") as String
-                    println("updatedVersion is '$updatedVersion'")
-                    it.version = updatedVersion
-                }
-
-            }
             it.finalizedBy(project.tasks.named("publishS3PublicationToS3Repository"))
         }
 
