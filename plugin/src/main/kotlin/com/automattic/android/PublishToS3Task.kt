@@ -11,7 +11,7 @@ import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 
-abstract class PublishToS3Task: DefaultTask() {
+abstract class PublishToS3Task : DefaultTask() {
     @Internal
     override fun getDescription(): String = "Calculates a version name and calls the publish task"
 
@@ -54,8 +54,9 @@ abstract class PublishToS3Task: DefaultTask() {
     }
 
     private fun updateMavenPublicationVersions(versionName: String) {
-        project.getExtensions().getByType(PublishingExtension::class.java).publications.withType(MavenPublication::class.java).forEach {
-            it.version = versionName
-        }
+        project.getExtensions().getByType(PublishingExtension::class.java)
+            .publications.withType(MavenPublication::class.java).forEach {
+                it.version = versionName
+            }
     }
 }

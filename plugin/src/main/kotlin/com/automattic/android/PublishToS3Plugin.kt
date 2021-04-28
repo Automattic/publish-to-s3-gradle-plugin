@@ -14,9 +14,7 @@ import java.net.URI
 
 const val EXTRA_VERSION_NAME = "extra_version_name"
 
-// TODO: Use logger instead of println across the project
-
-class PublishToS3Plugin: Plugin<Project> {
+class PublishToS3Plugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create("configureS3PublishPlugin", PublishToS3PluginExtension::class.java)
         val extraProperties = project.getExtensions().getByType(ExtraPropertiesExtension::class.java)
@@ -64,7 +62,8 @@ class PublishToS3Plugin: Plugin<Project> {
                     val state = p.tasks.getByName("publishToS3").state
                     val shouldProceed = state.executed && state.failure == null
                     if (!shouldProceed) {
-                        throw IllegalStateException("Publish tasks shouldn't be directly called. Please use 'publishToS3' task instead.")
+                        throw IllegalStateException("Publish tasks shouldn't be directly called." +
+                            " Please use 'publishToS3' task instead.")
                     }
                     shouldProceed
                 }
