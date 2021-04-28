@@ -12,6 +12,8 @@ import org.gradle.api.credentials.AwsCredentials
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import java.net.URI
 
+const val EXTRA_VERSION_NAME = "extra_version_name"
+
 // TODO: Use logger instead of println across the project
 
 class PublishToS3Plugin: Plugin<Project> {
@@ -39,11 +41,7 @@ class PublishToS3Plugin: Plugin<Project> {
             publishing.publications.create("s3", MavenPublication::class.java) { mavenPublication ->
                 mavenPublication.setGroupId(extension.groupId.get())
                 mavenPublication.setArtifactId(extension.artifactId.get())
-                try {
-                    mavenPublication.from(p.getComponents().getByName(extension.from.get()))
-                } catch (e: org.gradle.api.internal.provider.MissingValueException) {
-                    println("WARNING: 'from' property is not set which means no components will be published for this artifact: $e")
-                }
+                mavenPublication.from(p.getComponents().getByName(extension.from.get()))
             }
 
             publishing.repositories.maven { mavenRepo ->
@@ -60,9 +58,13 @@ class PublishToS3Plugin: Plugin<Project> {
                     val state = p.tasks.getByName("publishToS3").state
                     val shouldProceed = state.executed && state.failure == null
                     if (!shouldProceed) {
-                        throw IllegalStateException("Publish tasks shouldn't be directly called. Please call 'publishToS3' task instead.")
+                        throw IllegalStateException("Publish tasks shouldn't be directly called. Please use 'publishToS3' task instead.")
                     }
                     shouldProceed
+                }
+
+                task.doLast {
+                    println("'${project.extraProperties.get(EXTRA_VERSION_NAME)}' is succesfully published.")
                 }
             }
         }

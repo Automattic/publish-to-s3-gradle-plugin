@@ -43,6 +43,7 @@ abstract class PublishToS3Task: DefaultTask() {
     @TaskAction
     fun process() {
         val versionName = BuildEnvironment(tagName, branchName, sha1, pullRequestUrl).calculateVersionName()
+        project.extraProperties.set(EXTRA_VERSION_NAME, versionName)
         val isPublished = CheckS3Version(publishedGroupId, moduleName, versionName).check()
 
         if (isPublished) {
@@ -55,7 +56,6 @@ abstract class PublishToS3Task: DefaultTask() {
     private fun updateMavenPublicationVersions(versionName: String) {
         project.getExtensions().getByType(PublishingExtension::class.java).publications.withType(MavenPublication::class.java).forEach {
             it.version = versionName
-
         }
     }
 }
