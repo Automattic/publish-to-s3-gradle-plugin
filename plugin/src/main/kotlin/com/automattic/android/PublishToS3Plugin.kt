@@ -6,14 +6,19 @@ import com.automattic.android.publish.PublishToS3PluginExtension
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.credentials.AwsCredentials
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import java.net.URI
 
+// TODO: Use logger instead of println across the project
+
 class PublishToS3Plugin: Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create("configureS3PublishPlugin", PublishToS3PluginExtension::class.java)
+        val extraProperties = project.getExtensions().getByType(ExtraPropertiesExtension::class.java)
+        extraProperties.set("s3PublishVersion", "testingExtraProperties")
 
         project.plugins.apply("maven-publish")
 
@@ -22,11 +27,23 @@ class PublishToS3Plugin: Plugin<Project> {
             it.publishedGroupId = extension.groupId.get()
             it.moduleName = extension.artifactId.get()
             it.versionName = extension.versionName.get()
+
+            it.doLast {
+                println("extra: ${extraProperties.get("s3PublishVersion")}")
+            }
         }
         project.tasks.register("publishToS3", PublishToS3Task::class.java) {
             it.publishedGroupId = extension.groupId.get()
             it.moduleName = extension.artifactId.get()
 
+            it.doLast {
+                project.getExtensions().getByType(PublishingExtension::class.java).publications.withType(MavenPublication::class.java).forEach {
+                    val updatedVersion = extraProperties.get("s3PublishVersion") as String
+                    println("updatedVersion is '$updatedVersion'")
+                    it.version = updatedVersion
+                }
+
+            }
             it.finalizedBy(project.tasks.named("publishS3PublicationToS3Repository"))
         }
 
@@ -36,8 +53,11 @@ class PublishToS3Plugin: Plugin<Project> {
             publishing.publications.create("s3", MavenPublication::class.java) { mavenPublication ->
                 mavenPublication.setGroupId(extension.groupId.get())
                 mavenPublication.setArtifactId(extension.artifactId.get())
-                mavenPublication.setVersion(extension.versionName.get())
-                mavenPublication.from(p.getComponents().getByName(extension.from.get()))
+                try {
+                    mavenPublication.from(p.getComponents().getByName(extension.from.get()))
+                } catch (e: org.gradle.api.internal.provider.MissingValueException) {
+                    println("WARNING: 'from' property is not set which means no components will be published for this artifact: $e")
+                }
             }
 
             publishing.repositories.maven { mavenRepo ->
