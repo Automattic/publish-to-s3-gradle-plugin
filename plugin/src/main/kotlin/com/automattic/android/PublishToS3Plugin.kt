@@ -26,12 +26,12 @@ class PublishToS3Plugin: Plugin<Project> {
 
         project.tasks.register("calculateVersionName", CalculateVersionNameTask::class.java)
         project.tasks.register("isVersionPublishedToS3", CheckS3VersionTask::class.java) {
-            it.publishedGroupId = extension.groupId.get()
-            it.moduleName = extension.artifactId.get()
+            it.publishedGroupId = extension.groupId
+            it.moduleName = extension.artifactId
         }
         project.tasks.register("publishToS3", PublishToS3Task::class.java) {
-            it.publishedGroupId = extension.groupId.get()
-            it.moduleName = extension.artifactId.get()
+            it.publishedGroupId = extension.groupId
+            it.moduleName = extension.artifactId
             it.finalizedBy(project.tasks.named("publishS3PublicationToS3Repository"))
         }
 
@@ -39,9 +39,9 @@ class PublishToS3Plugin: Plugin<Project> {
             val publishing = p.getExtensions().getByType(PublishingExtension::class.java)
 
             publishing.publications.create("s3", MavenPublication::class.java) { mavenPublication ->
-                mavenPublication.setGroupId(extension.groupId.get())
-                mavenPublication.setArtifactId(extension.artifactId.get())
-                mavenPublication.from(p.getComponents().getByName(extension.from.get()))
+                mavenPublication.setGroupId(extension.groupId)
+                mavenPublication.setArtifactId(extension.artifactId)
+                mavenPublication.from(p.getComponents().getByName(extension.from))
             }
 
             publishing.repositories.maven { mavenRepo ->
