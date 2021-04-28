@@ -3,6 +3,7 @@ package com.automattic.android.publish
 import com.automattic.android.publish.BuildEnvironment
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 private const val developBranchName = "develop"
 private const val trunkBranchName = "trunk"
@@ -67,6 +68,6 @@ class BuildEnvironmentTest {
             sha1 = sha1,
             pullRequestUrl = ""
         )
-        assertEquals(null, buildEnv.calculateVersionName())
+        assertFailsWith<IllegalStateException> { buildEnv.calculateVersionName() }
     }
 }

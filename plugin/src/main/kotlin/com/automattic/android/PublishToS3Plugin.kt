@@ -42,9 +42,11 @@ class PublishToS3Plugin : Plugin<Project> {
                 if (!extension.from.isNullOrEmpty()) {
                     mavenPublication.from(p.getComponents().getByName(extension.from))
                 } else {
-                    println("(publish-to-s3 plugin) WARNING: No components added!\n" +
-                        "https://docs.gradle.org/current/userguide/publishing_customization.html\n" +
-                        "https://developer.android.com/studio/build/maven-publish-plugin")
+                    if (!extension.suppressWarnings) {
+                        println("(publish-to-s3 plugin) WARNING: No components added!\n" +
+                            "https://docs.gradle.org/current/userguide/publishing_customization.html\n" +
+                            "https://developer.android.com/studio/build/maven-publish-plugin")
+                    }
                 }
             }
 
