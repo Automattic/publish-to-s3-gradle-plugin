@@ -5,6 +5,5 @@ plugins {
 configureS3PublishPlugin {
     groupId.set("com.automattic.android")
     artifactId.set("publish-to-s3")
-    versionName.set("0.1")
 }
 

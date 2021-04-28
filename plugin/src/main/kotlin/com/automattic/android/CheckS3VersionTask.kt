@@ -19,6 +19,7 @@ abstract class CheckS3VersionTask : DefaultTask() {
     abstract var moduleName: String
 
     @get:Input
+    @set:Option(option = "version-name", description = "Version name to be checked")
     abstract var versionName: String
 
     @TaskAction

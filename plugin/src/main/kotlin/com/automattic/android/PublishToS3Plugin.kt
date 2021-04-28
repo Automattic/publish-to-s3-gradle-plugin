@@ -26,11 +26,6 @@ class PublishToS3Plugin: Plugin<Project> {
         project.tasks.register("isVersionPublishedToS3", CheckS3VersionTask::class.java) {
             it.publishedGroupId = extension.groupId.get()
             it.moduleName = extension.artifactId.get()
-            it.versionName = extension.versionName.get()
-
-            it.doLast {
-                println("extra: ${extraProperties.get("s3PublishVersion")}")
-            }
         }
         project.tasks.register("publishToS3", PublishToS3Task::class.java) {
             it.publishedGroupId = extension.groupId.get()
