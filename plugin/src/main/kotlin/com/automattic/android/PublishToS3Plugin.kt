@@ -54,12 +54,11 @@ class PublishToS3Plugin : Plugin<Project> {
             p.tasks.withType(PublishToMavenRepository::class.java) { task ->
                 task.onlyIf {
                     val state = p.tasks.getByName("publishToS3").state
-                    val shouldProceed = state.executed && state.failure == null
-                    if (!shouldProceed) {
+                    if (!state.executed) {
                         throw IllegalStateException("Publish tasks shouldn't be directly called." +
                             " Please use 'publishToS3' task instead.")
                     }
-                    shouldProceed
+                    state.failure == null
                 }
 
                 task.doLast {
