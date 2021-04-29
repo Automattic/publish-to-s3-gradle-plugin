@@ -8,14 +8,11 @@ private val requiredArgumentsErrorMessage: String by lazy {
         " command line arguments are required"
 }
 
-private const val DONT_PUBLISH_ERROR_MESSAGE = "Since this build is not from a tag and it's on a " +
-    "branch without a pull request url, it shouldn't be published to S3."
-
 data class BuildEnvironment(
     val tagName: String?,
     val branchName: String,
     val sha1: String,
-    val pullRequestUrl: String
+    val pullRequestUrl: String?
 ) {
     init {
         require(branchName.isNotEmpty() && sha1.isNotEmpty()) {
@@ -26,12 +23,10 @@ data class BuildEnvironment(
     fun calculateVersionName(): String =
         if (!tagName.isNullOrEmpty()) {
             tagName
-        } else if (branchName == "develop" || branchName == "trunk") {
-            "$branchName-$sha1"
-        } else if (pullRequestUrl.isNotEmpty()) {
+        } else if (!pullRequestUrl.isNullOrEmpty()) {
             "${pullRequestUrl.substringAfterLast("/")}-$sha1"
         } else {
-            throw IllegalStateException(DONT_PUBLISH_ERROR_MESSAGE)
-        }
+            "$branchName-$sha1"
+        } 
 }
 
