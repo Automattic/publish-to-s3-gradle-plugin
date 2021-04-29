@@ -5,6 +5,5 @@ plugins {
 s3PublishPlugin {
     groupId = "com.automattic.android"
     artifactId = "publish-to-s3"
-    suppressWarnings = true
 }
 

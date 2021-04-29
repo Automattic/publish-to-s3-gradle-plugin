@@ -12,10 +12,9 @@ fun publishToS3PluginFunctionalTestRunnerWithArguments(vararg arguments: String)
                 id("com.automattic.android.publish-to-s3")
             }
 
-            configureS3PublishPlugin {
+            s3PublishPlugin {
                 groupId = "org.wordpress"
                 artifactId = "utils"
-                suppressWarnings = true
             }
         """)
 

@@ -39,16 +39,7 @@ class PublishToS3Plugin : Plugin<Project> {
             publishing.publications.create("s3", MavenPublication::class.java) { mavenPublication ->
                 mavenPublication.setGroupId(extension.groupId)
                 mavenPublication.setArtifactId(extension.artifactId)
-                if (extension.from != null) {
-                    //mavenPublication.from(p.getComponents().getByName(extension.from))
-                    mavenPublication.from(extension.from)
-                } else {
-                    if (!extension.suppressWarnings) {
-                        println("(publish-to-s3 plugin) WARNING: No components added!\n" +
-                            "https://docs.gradle.org/current/userguide/publishing_customization.html\n" +
-                            "https://developer.android.com/studio/build/maven-publish-plugin")
-                    }
-                }
+                mavenPublication.from(extension.from)
             }
 
             publishing.repositories.maven { mavenRepo ->
