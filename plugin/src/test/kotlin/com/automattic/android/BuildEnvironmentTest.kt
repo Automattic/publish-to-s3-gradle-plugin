@@ -1,6 +1,7 @@
 package com.automattic.android.publish
 
 import com.automattic.android.publish.BuildEnvironment
+import com.automattic.android.publish.BuildEnvironmentArgs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -18,35 +19,35 @@ class BuildEnvironmentTest {
     @Test
     fun `returns {tagName} for non-empty tag`() {
         val tagName = "tag-123"
-        val buildEnv = BuildEnvironment(
+        val buildEnv = BuildEnvironmentArgs(
             tagName = tagName,
             branchName = developBranchName,
             sha1 = sha1,
             pullRequestUrl = pullRequestUrl
-        )
-        assertEquals(tagName, buildEnv.calculateVersionName())
+        ).process()
+        assertEquals(tagName, buildEnv.versionName)
     }
 
     @Test
     fun `returns {pullRequestNumber-sha1} for empty tag on random branch`() {
-        val buildEnv = BuildEnvironment(
+        val buildEnv = BuildEnvironmentArgs(
             tagName = null,
-            branchName = randomBranchName,
+            branchName = null,
             sha1 = sha1,
             pullRequestUrl = pullRequestUrl
-        )
-        assertEquals("$pullRequestNumber-$sha1", buildEnv.calculateVersionName())
+        ).process()
+        assertEquals("$pullRequestNumber-$sha1", buildEnv.versionName)
     }
     @Test
     fun `returns {branchName-sha1} for empty tag and empty pull request url`() {
         listOf(developBranchName, trunkBranchName, randomBranchName).forEach { branchName ->
-            val buildEnv = BuildEnvironment(
+            val buildEnv = BuildEnvironmentArgs(
                 tagName = null,
                 branchName = branchName,
                 sha1 = sha1,
                 pullRequestUrl = null
-            )
-            assertEquals("$branchName-$sha1", buildEnv.calculateVersionName())
+            ).process()
+            assertEquals("$branchName-$sha1", buildEnv.versionName)
         }
     }
 }
