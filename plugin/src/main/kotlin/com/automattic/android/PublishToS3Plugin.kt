@@ -39,7 +39,11 @@ class PublishToS3Plugin : Plugin<Project> {
             publishing.publications.create("s3", MavenPublication::class.java) { mavenPublication ->
                 mavenPublication.setGroupId(extension.groupId)
                 mavenPublication.setArtifactId(extension.artifactId)
-                mavenPublication.from(extension.from)
+                extension.from?.let { componentName ->
+                    if (componentName.isNotEmpty()) {
+                        mavenPublication.from(p.getComponents().getByName(componentName))
+                    }
+                }
             }
 
             publishing.repositories.maven { mavenRepo ->

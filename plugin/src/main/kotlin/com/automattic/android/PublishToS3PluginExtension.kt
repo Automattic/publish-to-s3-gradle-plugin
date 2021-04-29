@@ -6,5 +6,5 @@ import org.gradle.api.component.SoftwareComponent
 interface PublishToS3PluginExtension {
     var groupId: String
     var artifactId: String
-    var from: SoftwareComponent?
+    var from: String?
 }
