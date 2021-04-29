@@ -48,7 +48,7 @@ class PublishToS3Plugin : Plugin<Project> {
 
             publishing.repositories.maven { mavenRepo ->
                 mavenRepo.name = "s3"
-                mavenRepo.url = URI("s3://a8c-libs.s3.amazonaws.com/android/temp-plugin")
+                mavenRepo.url = URI("s3://a8c-libs.s3.amazonaws.com/android")
                 mavenRepo.credentials(AwsCredentials::class.java) {
                     it.setAccessKey(System.getenv("AWS_ACCESS_KEY"))
                     it.setSecretKey(System.getenv("AWS_SECRET_KEY"))

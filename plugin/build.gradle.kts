@@ -10,7 +10,7 @@ repositories {
 }
 
 group = "com.automattic.android"
-version = "0.1"
+version = "0.2"
 
 dependencies {
     // Align versions of all Kotlin components
