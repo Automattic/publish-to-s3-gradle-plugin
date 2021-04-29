@@ -42,7 +42,8 @@ abstract class PublishToS3Task : DefaultTask() {
 
     @TaskAction
     fun process() {
-        val versionName = BuildEnvironment(tagName, branchName, sha1, pullRequestUrl).calculateVersionName()
+        val versionName = BuildEnvironmentArgs(tagName, branchName, sha1, pullRequestUrl)
+            .process().versionName
         project.extraProperties.set(EXTRA_VERSION_NAME, versionName)
         val isPublished = CheckS3Version(publishedGroupId, moduleName, versionName).check()
 
