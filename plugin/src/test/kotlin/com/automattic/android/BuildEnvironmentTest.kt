@@ -3,6 +3,7 @@ package com.automattic.android.publish
 import com.automattic.android.publish.BuildEnvironment
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 private const val developBranchName = "develop"
 private const val trunkBranchName = "trunk"
@@ -27,28 +28,6 @@ class BuildEnvironmentTest {
     }
 
     @Test
-    fun `returns {develop-sha1} for empty tag on develop branch`() {
-        val buildEnv = BuildEnvironment(
-            tagName = null,
-            branchName = developBranchName,
-            sha1 = sha1,
-            pullRequestUrl = pullRequestUrl
-        )
-        assertEquals("develop-$sha1", buildEnv.calculateVersionName())
-    }
-
-    @Test
-    fun `returns {trunk-sha1} for empty tag on trunk branch`() {
-        val buildEnv = BuildEnvironment(
-            tagName = null,
-            branchName = trunkBranchName,
-            sha1 = sha1,
-            pullRequestUrl = pullRequestUrl
-        )
-        assertEquals("trunk-$sha1", buildEnv.calculateVersionName())
-    }
-
-    @Test
     fun `returns {pullRequestNumber-sha1} for empty tag on random branch`() {
         val buildEnv = BuildEnvironment(
             tagName = null,
@@ -58,15 +37,16 @@ class BuildEnvironmentTest {
         )
         assertEquals("$pullRequestNumber-$sha1", buildEnv.calculateVersionName())
     }
-
     @Test
-    fun `returns null for empty tag and empty pull request url on random branch`() {
-        val buildEnv = BuildEnvironment(
-            tagName = null,
-            branchName = randomBranchName,
-            sha1 = sha1,
-            pullRequestUrl = ""
-        )
-        assertEquals(null, buildEnv.calculateVersionName())
+    fun `returns {branchName-sha1} for empty tag and empty pull request url`() {
+        listOf(developBranchName, trunkBranchName, randomBranchName).forEach { branchName ->
+            val buildEnv = BuildEnvironment(
+                tagName = null,
+                branchName = branchName,
+                sha1 = sha1,
+                pullRequestUrl = null
+            )
+            assertEquals("$branchName-$sha1", buildEnv.calculateVersionName())
+        }
     }
 }

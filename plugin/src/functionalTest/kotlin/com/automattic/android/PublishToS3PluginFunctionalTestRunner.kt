@@ -11,6 +11,11 @@ fun publishToS3PluginFunctionalTestRunnerWithArguments(vararg arguments: String)
             plugins {
                 id("com.automattic.android.publish-to-s3")
             }
+
+            s3PublishPlugin {
+                groupId = "org.wordpress"
+                artifactId = "utils"
+            }
         """)
 
     val runner = GradleRunner.create()

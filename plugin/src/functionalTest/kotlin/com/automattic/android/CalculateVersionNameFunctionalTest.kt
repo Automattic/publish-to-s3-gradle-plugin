@@ -10,6 +10,8 @@ private const val developBranchName: String = "develop"
 private const val trunkBranchName: String = "trunk"
 private const val randomBranchName: String = "issue/random-branch-name"
 private const val randomTagName = "randomTagName"
+private const val pullRequestNumber = "63"
+private const val pullRequestUrl = "https://github.com/wordpress-mobile/WordPress-Utils-Android/pull/$pullRequestNumber"
 
 class CalculateVersionNameFunctionalTest {
     @Test
@@ -27,32 +29,31 @@ class CalculateVersionNameFunctionalTest {
     }
 
     @Test
-    fun `fails for random branch for missing pull request url`() {
-        val runner = publishToS3PluginFunctionalTestRunnerWithArguments("-q",
-            "calculateVersionName", "--branch-name=$randomBranchName", "--sha1=$randomSha1")
-        runner.buildAndFail()
-    }
-
-    @Test
-    fun `succeeds for develop branch for missing pull request url`() {
-        val runner = publishToS3PluginFunctionalTestRunnerWithArguments("-q",
-            "calculateVersionName", "--branch-name=$developBranchName", "--sha1=$randomSha1")
-        runner.build()
-    }
-
-    @Test
-    fun `succeeds for trunk branch for missing pull request url`() {
-        val runner = publishToS3PluginFunctionalTestRunnerWithArguments("-q",
-            "calculateVersionName", "--branch-name=$trunkBranchName", "--sha1=$randomSha1")
-        runner.build()
-    }
-
-    @Test
-    fun `returns tag name if given`() {
+    fun `returns {tagName} for non-empty tag`() {
         val runner = publishToS3PluginFunctionalTestRunnerWithArguments("-q",
             "calculateVersionName", "--branch-name=$developBranchName", "--sha1=$randomSha1",
             "--tag-name=$randomTagName")
         val result = runner.build()
         assertEquals(randomTagName, result.output.trim())
     }
+
+    @Test
+    fun `returns {pullRequestNumber-sha1}`() {
+        val runner = publishToS3PluginFunctionalTestRunnerWithArguments("-q",
+            "calculateVersionName", "--branch-name=$developBranchName", "--sha1=$randomSha1",
+            "--pull-request-url=$pullRequestUrl")
+        val result = runner.build()
+        assertEquals("$pullRequestNumber-$randomSha1", result.output.trim())
+    }
+
+    @Test
+    fun `returns {branchName-sha1} for empty tag and empty pull request url`() {
+        listOf(developBranchName, trunkBranchName, randomBranchName).forEach { branchName ->
+            val runner = publishToS3PluginFunctionalTestRunnerWithArguments("-q",
+                "calculateVersionName", "--branch-name=$branchName", "--sha1=$randomSha1")
+            val result = runner.build()
+            assertEquals("$branchName-$randomSha1", result.output.trim())
+        }
+    }
 }
+
