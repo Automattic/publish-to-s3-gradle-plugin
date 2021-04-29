@@ -16,7 +16,7 @@ const val EXTRA_VERSION_NAME = "extra_version_name"
 
 class PublishToS3Plugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val extension = project.extensions.create("configureS3PublishPlugin", PublishToS3PluginExtension::class.java)
+        val extension = project.extensions.create("s3PublishPlugin", PublishToS3PluginExtension::class.java)
         val extraProperties = project.getExtensions().getByType(ExtraPropertiesExtension::class.java)
         extraProperties.set("s3PublishVersion", "testingExtraProperties")
 
@@ -39,8 +39,9 @@ class PublishToS3Plugin : Plugin<Project> {
             publishing.publications.create("s3", MavenPublication::class.java) { mavenPublication ->
                 mavenPublication.setGroupId(extension.groupId)
                 mavenPublication.setArtifactId(extension.artifactId)
-                if (!extension.from.isNullOrEmpty()) {
-                    mavenPublication.from(p.getComponents().getByName(extension.from))
+                if (extension.from != null) {
+                    //mavenPublication.from(p.getComponents().getByName(extension.from))
+                    mavenPublication.from(extension.from)
                 } else {
                     if (!extension.suppressWarnings) {
                         println("(publish-to-s3 plugin) WARNING: No components added!\n" +
