@@ -1,32 +1,17 @@
 package com.automattic.android.publish
 
-const val BRANCH_NAME_ARGUMENT_NAME = "branch-name"
-const val SHA1_ARGUMENT_NAME = "sha1"
+sealed class BuildEnvironment {
+    data class FromTag(val tagName: String): BuildEnvironment()
+    data class FromPR(val pullRequestNumber: String, val sha1: String): BuildEnvironment()
+    data class FromBranch(val branchName: String, val sha1: String): BuildEnvironment()
 
-private val requiredArgumentsErrorMessage: String by lazy {
-    "--$BRANCH_NAME_ARGUMENT_NAME={branch-name} --$SHA1_ARGUMENT_NAME={sha1-commit-hash}" +
-        " command line arguments are required"
-}
-
-data class BuildEnvironment(
-    val tagName: String?,
-    val branchName: String,
-    val sha1: String,
-    val pullRequestUrl: String?
-) {
-    init {
-        require(branchName.isNotEmpty() && sha1.isNotEmpty()) {
-            requiredArgumentsErrorMessage
+    val versionName: String by lazy {
+        when (this) {
+            is FromTag -> tagName
+            is FromPR -> "$pullRequestNumber-$sha1"
+            is FromBranch -> "$branchName-$sha1"
         }
     }
-
-    fun calculateVersionName(): String =
-        if (!tagName.isNullOrEmpty()) {
-            tagName
-        } else if (!pullRequestUrl.isNullOrEmpty()) {
-            "${pullRequestUrl.substringAfterLast("/")}-$sha1"
-        } else {
-            "$branchName-$sha1"
-        } 
 }
+
 

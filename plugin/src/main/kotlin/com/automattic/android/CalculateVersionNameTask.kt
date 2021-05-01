@@ -33,7 +33,8 @@ abstract class CalculateVersionNameTask : DefaultTask() {
 
     @TaskAction
     fun process() {
-        val versionName = BuildEnvironment(tagName, branchName, sha1, pullRequestUrl).calculateVersionName()
+        val versionName = BuildEnvironmentArgs(tagName, branchName, sha1, pullRequestUrl)
+            .process().versionName
         project.extraProperties.set(EXTRA_VERSION_NAME, versionName)
         println("${versionName}")
     }
