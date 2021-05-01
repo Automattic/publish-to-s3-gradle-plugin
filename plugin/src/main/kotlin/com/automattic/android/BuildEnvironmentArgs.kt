@@ -25,13 +25,16 @@ data class BuildEnvironmentArgs(
             if (!pullRequestUrl.isNullOrEmpty()) {
                 BuildEnvironment.FromPR(pullRequestNumber(pullRequestUrl), sha1)
             } else {
-                val branchName = requireNotNullOrEmpty(branchName)
+                val branchName = sanitizeBranchName(requireNotNullOrEmpty(branchName))
                 BuildEnvironment.FromBranch(branchName, sha1)
             }
         } 
 
     private fun pullRequestNumber(pullRequestUrl: String): String =
         pullRequestUrl.substringAfterLast("/")
+
+    private fun sanitizeBranchName(branchName: String): String =
+        branchName.replace("/", "_")
 }
 
 private fun requireNotNullOrEmpty(value: String?, errorMessage: String = requiredArgumentsErrorMessage): String {
