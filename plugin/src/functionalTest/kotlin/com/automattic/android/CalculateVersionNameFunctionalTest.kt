@@ -52,7 +52,8 @@ class CalculateVersionNameFunctionalTest {
             val runner = publishToS3PluginFunctionalTestRunnerWithArguments("-q",
                 "calculateVersionName", "--branch-name=$branchName", "--sha1=$randomSha1")
             val result = runner.build()
-            assertEquals("$branchName-$randomSha1", result.output.trim())
+            val sanitizedBranchName = branchName.replace("/", "_")
+            assertEquals("$sanitizedBranchName-$randomSha1", result.output.trim())
         }
     }
 }

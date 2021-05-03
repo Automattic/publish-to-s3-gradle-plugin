@@ -47,7 +47,8 @@ class BuildEnvironmentTest {
                 sha1 = sha1,
                 pullRequestUrl = null
             ).process()
-            assertEquals("$branchName-$sha1", buildEnv.versionName)
+            val sanitizedBranchName = branchName.replace("/", "_")
+            assertEquals("$sanitizedBranchName-$sha1", buildEnv.versionName)
         }
     }
 }
