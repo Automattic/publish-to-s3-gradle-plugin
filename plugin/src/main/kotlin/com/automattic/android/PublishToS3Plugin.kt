@@ -1,8 +1,9 @@
 package com.automattic.android.publish
 
 import com.automattic.android.publish.CalculateVersionNameTask
-import com.automattic.android.publish.CheckS3VersionTask
+import com.automattic.android.publish.PublishToS3BasePlugin
 import com.automattic.android.publish.PublishToS3PluginExtension
+import com.automattic.android.publish.PublishToS3PluginBaseExtension
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.publish.PublishingExtension
@@ -17,16 +18,9 @@ const val EXTRA_VERSION_NAME = "extra_version_name"
 class PublishToS3Plugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create("s3PublishPlugin", PublishToS3PluginExtension::class.java)
-        val extraProperties = project.getExtensions().getByType(ExtraPropertiesExtension::class.java)
-        extraProperties.set("s3PublishVersion", "testingExtraProperties")
-
         project.plugins.apply("maven-publish")
+        project.plugins.apply(PublishToS3BasePlugin::class.java)
 
-        project.tasks.register("calculateVersionName", CalculateVersionNameTask::class.java)
-        project.tasks.register("isVersionPublishedToS3", CheckS3VersionTask::class.java) {
-            it.publishedGroupId = extension.groupId
-            it.moduleName = extension.artifactId
-        }
         project.tasks.register("publishToS3", PublishToS3Task::class.java) {
             it.publishedGroupId = extension.groupId
             it.moduleName = extension.artifactId
@@ -34,6 +28,11 @@ class PublishToS3Plugin : Plugin<Project> {
         }
 
         project.afterEvaluate { p ->
+            project.extensions.configure(PublishToS3PluginBaseExtension::class.java) {
+                it.groupId = extension.groupId
+                it.artifactId = extension.artifactId
+            }
+
             val publishing = p.getExtensions().getByType(PublishingExtension::class.java)
 
             publishing.publications.create("s3", MavenPublication::class.java) { mavenPublication ->
