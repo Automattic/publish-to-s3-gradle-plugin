@@ -11,7 +11,7 @@ import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 
-abstract class PublishToS3Task : DefaultTask() {
+abstract class PublishLibraryToS3Task : DefaultTask() {
     @Internal
     override fun getDescription(): String = "Calculates a version name and calls the publish task"
 
