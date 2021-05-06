@@ -9,16 +9,13 @@ import org.gradle.api.Plugin
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.credentials.AwsCredentials
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
-import java.net.URI
 
 const val EXTRA_VERSION_NAME = "extra_version_name"
 
 class PublishToS3Plugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create("s3PublishPlugin", PublishToS3PluginExtension::class.java)
-        project.plugins.apply("maven-publish")
         project.plugins.apply(PublishToS3BasePlugin::class.java)
 
         project.tasks.register("publishToS3", PublishToS3Task::class.java) {
@@ -33,24 +30,15 @@ class PublishToS3Plugin : Plugin<Project> {
                 it.artifactId = extension.artifactId
             }
 
-            val publishing = p.getExtensions().getByType(PublishingExtension::class.java)
-
-            publishing.publications.create("s3", MavenPublication::class.java) { mavenPublication ->
-                mavenPublication.setGroupId(extension.groupId)
-                mavenPublication.setArtifactId(extension.artifactId)
-                extension.from?.let { componentName ->
-                    if (componentName.isNotEmpty()) {
-                        mavenPublication.from(p.getComponents().getByName(componentName))
+            p.getExtensions().configure(PublishingExtension::class.java) { publishing ->
+                publishing.publications.create("s3", MavenPublication::class.java) { mavenPublication ->
+                    mavenPublication.setGroupId(extension.groupId)
+                    mavenPublication.setArtifactId(extension.artifactId)
+                    extension.from?.let { componentName ->
+                        if (componentName.isNotEmpty()) {
+                            mavenPublication.from(p.getComponents().getByName(componentName))
+                        }
                     }
-                }
-            }
-
-            publishing.repositories.maven { mavenRepo ->
-                mavenRepo.name = "s3"
-                mavenRepo.url = URI("s3://a8c-libs.s3.amazonaws.com/android")
-                mavenRepo.credentials(AwsCredentials::class.java) {
-                    it.setAccessKey(System.getenv("AWS_ACCESS_KEY"))
-                    it.setSecretKey(System.getenv("AWS_SECRET_KEY"))
                 }
             }
 
