@@ -1,9 +1,5 @@
 package com.automattic.android.publish
 
-import com.automattic.android.publish.CalculateVersionNameTask
-import com.automattic.android.publish.PublishToS3BasePlugin
-import com.automattic.android.publish.PublishToS3BaseExtension
-import com.automattic.android.publish.PublishLibraryToS3Extension
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.publish.PublishingExtension
@@ -19,7 +15,7 @@ class PublishLibraryToS3Plugin : Plugin<Project> {
         val extension = project.extensions.create("s3PublishPlugin", PublishLibraryToS3Extension::class.java)
         project.plugins.apply(PublishToS3BasePlugin::class.java)
 
-        project.tasks.register(PUBLISH_TASK_NAME, PublishLibraryToS3Task::class.java) {
+        project.tasks.register(PUBLISH_TASK_NAME, PublishToS3Task::class.java) {
             it.publishedGroupId = extension.groupId
             it.moduleName = extension.artifactId
             it.finalizedBy(project.tasks.named("publishS3PublicationToS3Repository"))
