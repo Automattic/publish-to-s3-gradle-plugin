@@ -10,9 +10,8 @@ import kotlin.test.assertFalse
 class CheckS3VersionFunctionalTest {
     @Test
     fun `verify version exists`() {
-       // TODO: Once a proper version is published to S3, we should update the `versionName`
         val runner = publishToS3PluginFunctionalTestRunnerWithArguments("-q",
-            "isVersionPublishedToS3", "--version-name=68-4f34ac114ea99eaac229428e2c416735e430d3d8")
+            "isVersionPublishedToS3", "--version-name=1.40.0")
         val result = runner.build()
         assertTrue(result.output.trim().toBoolean())
     }
