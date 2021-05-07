@@ -10,13 +10,15 @@ import org.gradle.api.tasks.Internal
 
 abstract class CheckS3VersionTask : DefaultTask() {
     @Internal
-    override fun getDescription(): String = "Checks if a version is already published to S3"
+    override fun getDescription(): String = "Checks if a version is published to S3"
 
     @get:Input
+    @set:Option(option = "published-group-id", description = "Published group id")
     abstract var publishedGroupId: String
 
     @get:Input
-    abstract var moduleName: String
+    @set:Option(option = "published-artifact-id", description = "Published artifact id")
+    abstract var artifactId: String
 
     @get:Input
     @set:Option(option = "version-name", description = "Version name to be checked")
@@ -24,7 +26,7 @@ abstract class CheckS3VersionTask : DefaultTask() {
 
     @TaskAction
     fun process() {
-        val result = CheckS3Version(publishedGroupId, moduleName, versionName).check()
+        val result = CheckS3Version(publishedGroupId, artifactId, versionName).check()
         println("$result")
     }
 }

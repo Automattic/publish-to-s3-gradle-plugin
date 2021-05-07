@@ -11,8 +11,10 @@ private const val PUBLISH_TASK_NAME = "publishLibraryToS3"
 
 class PublishLibraryToS3Plugin : Plugin<Project> {
     override fun apply(project: Project) {
+        project.plugins.apply("maven-publish")
+
         val extension = project.extensions.create("s3PublishPlugin", PublishLibraryToS3Extension::class.java)
-        project.plugins.apply(PublishToS3BasePlugin::class.java)
+        project.setupS3Repository()
 
         project.tasks.register(PUBLISH_TASK_NAME, PublishToS3Task::class.java) {
             it.publishedGroupId = extension.groupId
@@ -21,11 +23,6 @@ class PublishLibraryToS3Plugin : Plugin<Project> {
         }
 
         project.afterEvaluate { p ->
-            project.extensions.configure(PublishToS3BaseExtension::class.java) {
-                it.groupId = extension.groupId
-                it.artifactId = extension.artifactId
-            }
-
             p.getExtensions().configure(PublishingExtension::class.java) { publishing ->
                 publishing.publications.create("s3", MavenPublication::class.java) { mavenPublication ->
                     mavenPublication.setGroupId(extension.groupId)

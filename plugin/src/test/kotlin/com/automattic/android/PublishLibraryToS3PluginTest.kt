@@ -13,8 +13,6 @@ class PublishLibraryToS3PluginTest {
         project.plugins.apply("com.automattic.android.publish-library-to-s3")
 
         // Verify the result
-        assertNotNull(project.tasks.findByName("calculateVersionName"))
-        assertNotNull(project.tasks.findByName("isVersionPublishedToS3"))
         project.afterEvaluate {
             /**
              * "publishS3PublicationToS3Repository" task is only available after the project is evaluated
