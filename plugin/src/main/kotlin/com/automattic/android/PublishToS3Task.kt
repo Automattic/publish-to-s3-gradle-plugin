@@ -7,14 +7,11 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-import org.gradle.api.plugins.ExtraPropertiesExtension
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
 
 abstract class PublishToS3Task : DefaultTask() {
     @Internal
     override fun getDescription(): String = "Calculates a version name and updates maven publication version" +
-        "- It should be finalized by the proper publish task"
+        " - It should be finalized by the proper publish task"
 
     @get:Input
     abstract var publishedGroupId: String
@@ -42,20 +39,13 @@ abstract class PublishToS3Task : DefaultTask() {
     fun process() {
         val versionName = BuildEnvironmentArgs(tagName, branchName, sha1, pullRequestUrl)
             .process().versionName
-        project.extraProperties.set(EXTRA_VERSION_NAME, versionName)
+        project.setExtraVersionName(versionName)
         val isPublished = CheckS3Version(publishedGroupId, moduleName, versionName).check()
 
         if (isPublished) {
             throw IllegalStateException("'$versionName' is already published to S3!")
         }
 
-        updateMavenPublicationVersions(versionName)
-    }
-
-    private fun updateMavenPublicationVersions(versionName: String) {
-        project.getExtensions().getByType(PublishingExtension::class.java)
-            .publications.withType(MavenPublication::class.java).forEach {
-                it.version = versionName
-            }
+        project.setVersionForAllMavenPublications(versionName)
     }
 }

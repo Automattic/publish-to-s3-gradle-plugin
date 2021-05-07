@@ -7,7 +7,6 @@ import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 
-const val EXTRA_VERSION_NAME = "extra_version_name"
 private const val PUBLISH_TASK_NAME = "publishLibraryToS3"
 
 class PublishLibraryToS3Plugin : Plugin<Project> {
@@ -50,7 +49,7 @@ class PublishLibraryToS3Plugin : Plugin<Project> {
                 }
 
                 task.doLast {
-                    println("'${project.extraProperties.get(EXTRA_VERSION_NAME)}' is succesfully published.")
+                    println("'${project.getExtraVersionName()}' is succesfully published.")
                 }
             }
         }
