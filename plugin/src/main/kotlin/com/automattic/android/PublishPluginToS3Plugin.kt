@@ -7,7 +7,9 @@ private const val PUBLISH_PLUGIN_TASK_NAME = "publishPluginToS3"
 
 class PublishPluginToS3Plugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val extension = project.extensions.create("s3PublishPlugin", PublishLibraryToS3Extension::class.java)
+        project.plugins.apply("maven-publish")
+
+        val extension = project.extensions.create("s3PublishPlugin", PublishPluginToS3Extension::class.java)
         project.setupS3Repository()
 
         project.tasks.register(PUBLISH_PLUGIN_TASK_NAME, PublishToS3Task::class.java) {

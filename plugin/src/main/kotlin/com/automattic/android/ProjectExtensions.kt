@@ -53,3 +53,4 @@ fun Project.addFilterAndFinalizerToPublishToMavenRepositoryTasks(filterTask: Str
         }
     }
 }
+
