@@ -10,6 +10,8 @@ class PublishPluginToS3PluginTest {
     fun `plugin registers task`() {
         // Create a test project and apply the plugin
         val project = ProjectBuilder.builder().build()
+        // We expect every Gradle plugin to apply `java-gradle-plugin`
+        // https://docs.gradle.org/current/userguide/custom_plugins.html#sec:custom_plugins_standalone_project
         project.plugins.apply("java-gradle-plugin")
         project.plugins.apply("com.automattic.android.publish-plugin-to-s3")
 
