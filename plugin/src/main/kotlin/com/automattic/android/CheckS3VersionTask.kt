@@ -13,7 +13,7 @@ abstract class CheckS3VersionTask : DefaultTask() {
     override fun getDescription(): String = "Checks if a version is published to S3"
 
     @get:Input
-    @set:Option(option = "published-group-id", description = "Published group id")
+    @set:Option(option = "published-group-id", description = "Published artifact group id")
     abstract var publishedGroupId: String
 
     @get:Input
