@@ -1,9 +1,5 @@
 package com.automattic.android.publish
 
-import com.automattic.android.publish.CalculateVersionNameTask
-import com.automattic.android.publish.PublishToS3BasePlugin
-import com.automattic.android.publish.PublishToS3PluginExtension
-import com.automattic.android.publish.PublishToS3PluginBaseExtension
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.publish.PublishingExtension
@@ -12,20 +8,21 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 
 const val EXTRA_VERSION_NAME = "extra_version_name"
+private const val PUBLISH_TASK_NAME = "publishLibraryToS3"
 
-class PublishToS3Plugin : Plugin<Project> {
+class PublishLibraryToS3Plugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val extension = project.extensions.create("s3PublishPlugin", PublishToS3PluginExtension::class.java)
+        val extension = project.extensions.create("s3PublishPlugin", PublishLibraryToS3Extension::class.java)
         project.plugins.apply(PublishToS3BasePlugin::class.java)
 
-        project.tasks.register("publishToS3", PublishToS3Task::class.java) {
+        project.tasks.register(PUBLISH_TASK_NAME, PublishToS3Task::class.java) {
             it.publishedGroupId = extension.groupId
             it.moduleName = extension.artifactId
             it.finalizedBy(project.tasks.named("publishS3PublicationToS3Repository"))
         }
 
         project.afterEvaluate { p ->
-            project.extensions.configure(PublishToS3PluginBaseExtension::class.java) {
+            project.extensions.configure(PublishToS3BaseExtension::class.java) {
                 it.groupId = extension.groupId
                 it.artifactId = extension.artifactId
             }
@@ -44,10 +41,10 @@ class PublishToS3Plugin : Plugin<Project> {
 
             p.tasks.withType(PublishToMavenRepository::class.java) { task ->
                 task.onlyIf {
-                    val state = p.tasks.getByName("publishToS3").state
+                    val state = p.tasks.getByName(PUBLISH_TASK_NAME).state
                     if (!state.executed) {
                         throw IllegalStateException("Publish tasks shouldn't be directly called." +
-                            " Please use 'publishToS3' task instead.")
+                            " Please use '$PUBLISH_TASK_NAME' task instead.")
                     }
                     state.failure == null
                 }

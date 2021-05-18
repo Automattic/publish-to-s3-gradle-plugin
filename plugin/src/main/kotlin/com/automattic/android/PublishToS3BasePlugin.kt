@@ -1,6 +1,6 @@
 package com.automattic.android.publish
 
-import com.automattic.android.publish.PublishToS3PluginBaseExtension
+import com.automattic.android.publish.PublishToS3BaseExtension
 import com.automattic.android.publish.CalculateVersionNameTask
 import com.automattic.android.publish.CheckS3VersionTask
 import java.net.URI
@@ -11,7 +11,7 @@ import org.gradle.api.credentials.AwsCredentials
 
 class PublishToS3BasePlugin  : Plugin<Project> {
     override fun apply(project: Project) {
-        val extension = project.extensions.create("s3PublishBasePlugin", PublishToS3PluginBaseExtension::class.java)
+        val extension = project.extensions.create("s3PublishBasePlugin", PublishToS3BaseExtension::class.java)
         project.plugins.apply("maven-publish")
 
         project.tasks.register("calculateVersionName", CalculateVersionNameTask::class.java)
