@@ -1,8 +1,7 @@
 package com.automattic.android.publish
 
-interface PublishLibraryToS3Extension {
+interface PublishPluginToS3Extension {
     var groupId: String
     var artifactId: String
-    var from: String?
 }
 

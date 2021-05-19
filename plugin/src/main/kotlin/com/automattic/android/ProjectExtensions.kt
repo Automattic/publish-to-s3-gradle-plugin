@@ -4,6 +4,7 @@ import java.net.URI
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.api.credentials.AwsCredentials
 
 private const val EXTRA_VERSION_NAME = "extra_version_name"
@@ -35,3 +36,21 @@ fun Project.setupS3Repository() {
         }
     }
 }
+
+fun Project.addFilterAndFinalizerToPublishToMavenRepositoryTasks(filterTask: String) {
+    project.tasks.withType(PublishToMavenRepository::class.java) { task ->
+        task.onlyIf {
+            val state = project.tasks.getByName(filterTask).state
+            if (!state.executed) {
+                throw IllegalStateException("Publish tasks shouldn't be directly called." +
+                    " Please use '$filterTask' task instead.")
+            }
+            state.failure == null
+        }
+
+        task.doLast {
+            println("'${project.getExtraVersionName()}' is succesfully published.")
+        }
+    }
+}
+
