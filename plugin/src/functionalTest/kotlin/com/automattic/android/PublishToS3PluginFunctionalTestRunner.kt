@@ -3,18 +3,13 @@ package com.automattic.android.publish
 import java.io.File
 import org.gradle.testkit.runner.GradleRunner
 
-fun publishToS3PluginFunctionalTestRunnerWithArguments(vararg arguments: String): GradleRunner {
+fun publishToS3HelpersPluginFunctionalTestRunnerWithArguments(vararg arguments: String): GradleRunner {
     val projectDir = File("build/functionalTest")
     projectDir.mkdirs()
     projectDir.resolve("settings.gradle").writeText("")
     projectDir.resolve("build.gradle.kts").writeText("""
             plugins {
-                id("com.automattic.android.publish-to-s3")
-            }
-
-            s3PublishPlugin {
-                groupId = "org.wordpress"
-                artifactId = "utils"
+                id("com.automattic.android.publish-to-s3-helpers")
             }
         """)
 
