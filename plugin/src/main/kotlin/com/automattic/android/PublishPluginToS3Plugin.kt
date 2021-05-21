@@ -8,6 +8,7 @@ private const val PUBLISH_PLUGIN_TASK_NAME = "publishPluginToS3"
 class PublishPluginToS3Plugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.plugins.apply("maven-publish")
+        project.plugins.apply("java-gradle-plugin")
 
         val extension = project.extensions.create("s3PublishPlugin", PublishPluginToS3Extension::class.java)
         project.setupS3Repository()
@@ -15,7 +16,7 @@ class PublishPluginToS3Plugin : Plugin<Project> {
         project.tasks.register(PUBLISH_PLUGIN_TASK_NAME, PublishToS3Task::class.java) {
             it.publishedGroupId = extension.groupId
             it.moduleName = extension.artifactId
-            it.finalizedBy(project.tasks.named("publishPluginMavenPublicationToMavenRepository"))
+            it.finalizedBy(project.tasks.named("publishPluginMavenPublicationToS3Repository"))
         }
 
         project.addFilterAndFinalizerToPublishToMavenRepositoryTasks(filterTask = PUBLISH_PLUGIN_TASK_NAME)
