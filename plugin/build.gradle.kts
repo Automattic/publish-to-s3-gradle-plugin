@@ -41,6 +41,11 @@ gradlePlugin {
     }
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 // Add a source set for the functional test suite
 val functionalTestSourceSet = sourceSets.create("functionalTest")
 gradlePlugin.testSourceSets(functionalTestSourceSet)
