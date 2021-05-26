@@ -10,7 +10,7 @@ repositories {
 }
 
 group = "com.automattic.android"
-version = "0.3.1"
+version = "0.4.0"
 
 dependencies {
     // Align versions of all Kotlin components
@@ -39,6 +39,11 @@ gradlePlugin {
         id = "com.automattic.android.publish-plugin-to-s3"
         implementationClass = "com.automattic.android.publish.PublishPluginToS3Plugin"
     }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 // Add a source set for the functional test suite
