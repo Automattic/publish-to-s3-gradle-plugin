@@ -13,9 +13,7 @@ fun Project.setExtraVersionName(versionName: String) {
     project.extraProperties.set(EXTRA_VERSION_NAME, versionName)
 }
 
-fun Project.getExtraVersionName() {
-    project.extraProperties.get(EXTRA_VERSION_NAME)
-}
+fun Project.getExtraVersionName() = project.extraProperties.get(EXTRA_VERSION_NAME)
 
 fun Project.setVersionForAllMavenPublications(versionName: String) {
     project.getExtensions().getByType(PublishingExtension::class.java)
