@@ -16,6 +16,8 @@ class PublishPluginToS3Plugin : Plugin<Project> {
         project.tasks.register(PUBLISH_PLUGIN_TASK_NAME, PublishToS3Task::class.java) {
             it.publishedGroupId = extension.groupId
             it.moduleName = extension.artifactId
+            // Since plugin publication is created by `java-gradle-plugin` we need to manually change its artifact id
+            project.setArtifactIdForAllMavenPublications(extension.artifactId)
             it.finalizedBy(project.tasks.named("publishPluginMavenPublicationToS3Repository"))
         }
 
