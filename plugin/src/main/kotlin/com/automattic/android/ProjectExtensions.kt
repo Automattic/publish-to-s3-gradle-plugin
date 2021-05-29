@@ -24,6 +24,14 @@ fun Project.setVersionForAllMavenPublications(versionName: String) {
         }
 }
 
+fun Project.setArtifactIdForAllMavenPublications(artifactId: String?) {
+    if (artifactId.isNullOrEmpty()) return
+    project.getExtensions().getByType(PublishingExtension::class.java)
+        .publications.withType(MavenPublication::class.java).forEach {
+            it.artifactId = artifactId
+        }
+}
+
 fun Project.setupS3Repository() {
     project.getExtensions().configure(PublishingExtension::class.java) { publishing ->
         publishing.repositories.maven { mavenRepo ->
