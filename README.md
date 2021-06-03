@@ -39,7 +39,7 @@ https://developer.android.com/studio/build/maven-publish-plugin
 
 The plugin applies & configures the `maven-publish` plugin by adding the S3 repository as well as a `MavenPublication` that uses the calculated version name. It provides 3 Gradle tasks:
 
-* `publishLibraryToS3` takes `--branch-name`, `--sha1`, `--tag-name` & `--pull-request-url` command line arguments and uses the information to calculate a version name, verify that this version is not already published to S3 and finally calls `publishS3PublicationToS3Repository` gradle task which will publish the artifacts to S3.
+* `publishLibraryToS3` can take a mix of the following command line arguments: `--branch-name`, `--sha1`, `--tag-name`, `--pull-request-url`. Depending on the arguments passed, it uses the information to calculate a version name (see below), verify that this version is not already published to S3 and finally calls `publishS3PublicationToS3Repository` gradle task which will publish the artifacts to S3.
 * `calculateVersionName` takes `--branch-name`, `--sha1`, `--tag-name` & `--pull-request-url` command line arguments and prints the calculated version name.
 * `isVersionPublishedToS3` takes  `--version-name` command line argument and combines it with the `groupId` & `artifactId` values from the extension to check if it's already published to S3.
 
@@ -62,4 +62,3 @@ Unfortunately, we are currently unable to utilize the [Plugin DSL](https://docs.
 The gist of the issue is that Gradle is looking for a JAR file for the [Plugin Marker Artifact](https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_markers) even though it should only utilize its dependencies.
 [As explained by one of Gradle developers](https://github.com/gradle/gradle/issues/8754#issuecomment-474011765), there is currently no way to get around these extra requests.
 Since S3 returns 403 status code for nonexistent files, the build results in failure.
-
