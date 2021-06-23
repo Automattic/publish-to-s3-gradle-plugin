@@ -12,6 +12,6 @@ jobs:
     container:
       image: wordpressmobile/android-build-image
     steps:
-    - uses: actions/checkout@v2
-    - name: Test
-      run: ./gradlew :plugin:check
+      - uses: actions/checkout@v2
+      - name: Test
+        run: ./gradlew :plugin:check
