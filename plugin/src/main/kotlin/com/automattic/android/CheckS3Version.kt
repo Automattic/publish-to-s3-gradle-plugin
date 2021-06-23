@@ -4,7 +4,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 private const val SUCCESS_STATUS_CODE = 200
-private const val FAILURE_STATUS_CODE = 403
+private const val FORBIDDEN_STATUS_CODE = 403
+private const val FAILURE_STATUS_CODE = 404
 
 class CheckS3Version(
     val publishedGroupId: String,
@@ -32,7 +33,8 @@ class CheckS3Version(
     fun check(): Boolean =
         when (responseCodeForUrl(pomUrl)) {
             SUCCESS_STATUS_CODE -> true
-            FAILURE_STATUS_CODE -> false
+            // Dependending on ACL settings S3 may return 403 or 404 for a missing file
+            FAILURE_STATUS_CODE, FORBIDDEN_STATUS_CODE -> false
             else -> throw IllegalStateException(unexpectedStatusCodeMessage)
         }
 
