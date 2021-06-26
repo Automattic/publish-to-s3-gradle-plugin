@@ -14,12 +14,10 @@ abstract class PrepareToPublishToS3Task : DefaultTask() {
         " - It should be finalized by the proper publish task"
 
     @get:Input
-    @set:Option(option = "published-group-id", description = "Published artifact group id")
     abstract var publishedGroupId: String
 
     @get:Input
-    @set:Option(option = "published-artifact-id", description = "Published artifact id")
-    abstract var publishedArtifactId: String
+    abstract var moduleName: String
 
     @Input
     @Option(option = ARG_TAG_NAME, description = "The name of the git tag, if the current build is tagged")
@@ -42,7 +40,7 @@ abstract class PrepareToPublishToS3Task : DefaultTask() {
         val versionName = BuildEnvironmentArgs(tagName, branchName, sha1, pullRequestUrl)
             .process().versionName
         project.setExtraVersionName(versionName)
-        val isPublished = CheckS3Version(publishedGroupId, publishedArtifactId, versionName).check()
+        val isPublished = CheckS3Version(publishedGroupId, moduleName, versionName).check()
 
         if (isPublished) {
             throw IllegalStateException("'$versionName' is already published to S3!")

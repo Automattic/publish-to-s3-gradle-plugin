@@ -13,7 +13,11 @@ class PublishToS3Plugin : Plugin<Project> {
         project.tasks.register("calculateVersionName", CalculateVersionNameTask::class.java)
         project.tasks.register("isVersionPublishedToS3", CheckS3VersionTask::class.java)
 
-        val preTask = project.tasks.register("prepareToPublishToS3", PrepareToPublishToS3Task::class.java)
+        val extension = project.extensions.create("s3PublishLibrary", PublishToS3Extension::class.java)
+        val preTask = project.tasks.register("prepareToPublishToS3", PrepareToPublishToS3Task::class.java) { task ->
+            task.publishedGroupId = extension.mavenPublishGroupId
+            task.moduleName = extension.mavenPublishArtifactId
+        }
 
         project.tasks.withType(PublishToMavenRepository::class.java) { task ->
             task.dependsOn(preTask)
