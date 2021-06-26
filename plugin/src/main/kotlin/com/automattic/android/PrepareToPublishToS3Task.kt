@@ -10,8 +10,7 @@ import org.gradle.api.tasks.Internal
 
 abstract class PrepareToPublishToS3Task : DefaultTask() {
     @Internal
-    override fun getDescription(): String = "Calculates a version name and updates maven publication version" +
-        " - It should be finalized by the proper publish task"
+    override fun getDescription(): String = "Calculates the version name and updates maven publication version"
 
     @get:Input
     abstract var publishedGroupId: String
