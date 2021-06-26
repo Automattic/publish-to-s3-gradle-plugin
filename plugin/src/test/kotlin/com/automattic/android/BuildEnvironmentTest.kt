@@ -13,7 +13,6 @@ private const val randomBranchName = "issue/branch-name"
 private const val tagName = "tag-123"
 private const val sha1 = "d40bd62a4d5566bf9681ecfd177e867f7b2ff3f9"
 private const val pullRequestNumber = "63"
-private const val pullRequestUrl = "https://github.com/wordpress-mobile/WordPress-Utils-Android/pull/$pullRequestNumber"
 
 class BuildEnvironmentTest {
     @Test
@@ -23,7 +22,7 @@ class BuildEnvironmentTest {
             tagName = tagName,
             branchName = developBranchName,
             sha1 = sha1,
-            pullRequestUrl = pullRequestUrl
+            pullRequestNumber = pullRequestNumber
         ).process()
         assertEquals(tagName, buildEnv.versionName)
     }
@@ -34,18 +33,18 @@ class BuildEnvironmentTest {
             tagName = null,
             branchName = null,
             sha1 = sha1,
-            pullRequestUrl = pullRequestUrl
+            pullRequestNumber = pullRequestNumber
         ).process()
         assertEquals("$pullRequestNumber-$sha1", buildEnv.versionName)
     }
     @Test
-    fun `returns {branchName-sha1} for empty tag and empty pull request url`() {
+    fun `returns {branchName-sha1} for empty tag and empty pull request number`() {
         listOf(developBranchName, trunkBranchName, randomBranchName).forEach { branchName ->
             val buildEnv = BuildEnvironmentArgs(
                 tagName = null,
                 branchName = branchName,
                 sha1 = sha1,
-                pullRequestUrl = null
+                pullRequestNumber = null
             ).process()
             val sanitizedBranchName = branchName.replace("/", "_")
             assertEquals("$sanitizedBranchName-$sha1", buildEnv.versionName)
