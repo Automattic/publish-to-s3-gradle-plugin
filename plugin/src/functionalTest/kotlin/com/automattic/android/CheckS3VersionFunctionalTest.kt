@@ -9,7 +9,7 @@ import kotlin.test.assertFalse
 class CheckS3VersionFunctionalTest {
     @Test
     fun `verify version exists`() {
-        val runner = helpersPluginFunctionalTestRunner("-q",
+        val runner = functionalTestRunner("-q",
             "isVersionPublishedToS3", "--version-name=1.40.0",
             "--published-group-id=org.wordpress", "--published-artifact-id=utils"
         )
@@ -19,7 +19,7 @@ class CheckS3VersionFunctionalTest {
 
     @Test
     fun `verify version does not exist`() {
-        val runner = helpersPluginFunctionalTestRunner("-q",
+        val runner = functionalTestRunner("-q",
             "isVersionPublishedToS3", "--version-name=thisversiondoesntexist",
             "--published-group-id=org.wordpress", "--published-artifact-id=utils"
         )
