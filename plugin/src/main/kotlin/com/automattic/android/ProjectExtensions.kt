@@ -22,15 +22,7 @@ fun Project.setVersionForAllMavenPublications(versionName: String) {
         }
 }
 
-fun Project.setArtifactIdForAllMavenPublications(artifactId: String?) {
-    if (artifactId.isNullOrEmpty()) return
-    project.getExtensions().getByType(PublishingExtension::class.java)
-        .publications.withType(MavenPublication::class.java).forEach {
-            it.artifactId = artifactId
-        }
-}
-
-fun Project.setupS3Repository() {
+fun Project.addS3MavenRepository() {
     project.getExtensions().configure(PublishingExtension::class.java) { publishing ->
         publishing.repositories.maven { mavenRepo ->
             mavenRepo.name = "s3"
@@ -43,20 +35,10 @@ fun Project.setupS3Repository() {
     }
 }
 
-fun Project.addFilterAndFinalizerToPublishToMavenRepositoryTasks(filterTask: String) {
+fun Project.printPublishedVersionNameAfterPublishTasks() {
     project.tasks.withType(PublishToMavenRepository::class.java) { task ->
-        task.onlyIf {
-            val state = project.tasks.getByName(filterTask).state
-            if (!state.executed) {
-                throw IllegalStateException("Publish tasks shouldn't be directly called." +
-                    " Please use '$filterTask' task instead.")
-            }
-            state.failure == null
-        }
-
         task.doLast {
             println("'${project.getExtraVersionName()}' is succesfully published.")
         }
     }
 }
-

@@ -25,12 +25,12 @@ abstract class CalculateVersionNameTask : DefaultTask() {
     var sha1: String = ""
 
     @Input
-    @Option(option = ARG_PR_URL, description = "The URL of the associated pull request")
-    var pullRequestUrl: String = ""
+    @Option(option = ARG_PR_NUMBER, description = "The number of the associated pull request")
+    var pullRequestNumber: String = ""
 
     @TaskAction
     fun process() {
-        val versionName = BuildEnvironmentArgs(tagName, branchName, sha1, pullRequestUrl)
+        val versionName = BuildEnvironmentArgs(tagName, branchName, sha1, pullRequestNumber)
             .process().versionName
         project.setExtraVersionName(versionName)
         println("${versionName}")

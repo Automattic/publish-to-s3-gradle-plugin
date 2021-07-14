@@ -8,17 +8,25 @@ import kotlin.test.assertFalse
 
 class ListAllTasksFunctionalTest {
     @Test
-    fun `lists all publish helpers tasks`() {
-        helpersPluginFunctionalTestRunner("-q", "tasks", "--all").build()
+    fun `lists all tasks`() {
+        functionalTestRunner("-q", "tasks", "--all").build()
     }
+}
 
-    @Test
-    fun `lists all publish library tasks`() {
-        publishLibraryFunctionalTestRunner("-q", "tasks", "--all").build()
-    }
+fun functionalTestRunner(vararg arguments: String): GradleRunner {
+    val projectDir = File("build/functionalTest")
+    projectDir.mkdirs()
+    projectDir.resolve("settings.gradle").writeText("")
+    projectDir.resolve("build.gradle.kts").writeText("""
+            plugins {
+                id("com.automattic.android.publish-to-s3")
+            }
+        """)
 
-    @Test
-    fun `lists all publish plugin tasks`() {
-        publishPluginFunctionalTestRunner("-q", "tasks", "--all").build()
-    }
+    val runner = GradleRunner.create()
+    runner.forwardOutput()
+    runner.withPluginClasspath()
+    runner.withArguments(arguments.toList())
+    runner.withProjectDir(projectDir)
+    return runner
 }
