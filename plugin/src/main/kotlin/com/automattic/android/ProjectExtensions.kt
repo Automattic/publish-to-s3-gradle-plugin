@@ -1,5 +1,6 @@
 package com.automattic.android.publish
 
+import java.io.File
 import java.net.URI
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
@@ -38,6 +39,8 @@ fun Project.addS3MavenRepository() {
 fun Project.printPublishedVersionNameAfterPublishTasks() {
     project.tasks.withType(PublishToMavenRepository::class.java) { task ->
         task.doLast {
+            File(project.buildDir, "published-version.txt").writeText("${project.getExtraVersionName()}")
+
             println("'${project.getExtraVersionName()}' is succesfully published.")
         }
     }
