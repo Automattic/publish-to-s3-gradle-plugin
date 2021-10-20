@@ -7,12 +7,15 @@ plugins {
 
 repositories {
     mavenCentral()
+    google()
 }
 
 group = "com.automattic.android"
 version = "0.6.1"
 
 dependencies {
+    compileOnly("com.android.tools.build:gradle:4.2.2")
+
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
