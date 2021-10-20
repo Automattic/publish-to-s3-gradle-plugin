@@ -11,7 +11,7 @@ repositories {
 }
 
 group = "com.automattic.android"
-version = "0.6.1"
+version = "0.7.0"
 
 dependencies {
     compileOnly("com.android.tools.build:gradle:4.2.2")
