@@ -26,12 +26,7 @@ class PublishToS3Plugin : Plugin<Project> {
             }
         }
 
-        val extension = project.extensions.create("publishToS3Plugin", PublishToS3Extension::class.java)
-        val preTask = project.tasks.register("prepareToPublishToS3", PrepareToPublishToS3Task::class.java) { task ->
-            task.publishedGroupId = extension.mavenPublishGroupId
-            task.moduleName = extension.mavenPublishArtifactId
-        }
-
+        val preTask = project.tasks.register("prepareToPublishToS3", PrepareToPublishToS3Task::class.java)
         project.tasks.withType(PublishToMavenRepository::class.java) { task ->
             task.dependsOn(preTask)
         }
