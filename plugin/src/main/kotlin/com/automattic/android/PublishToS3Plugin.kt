@@ -15,7 +15,7 @@ class PublishToS3Plugin : Plugin<Project> {
         project.tasks.register("calculateVersionName", CalculateVersionNameTask::class.java)
         project.tasks.register("isVersionPublishedToS3", CheckS3VersionTask::class.java)
 
-        if (project.pluginManager.hasPlugin("com.android.library")) {
+        project.pluginManager.withPlugin("com.android.library") {
             project.extensions.findByType(LibraryExtension::class.java)?.let { androidLibrary ->
                 androidLibrary.sourceSets.findByName("main")?.let { mainSourceSet ->
                     project.tasks.register("androidSourcesJar", Jar::class.java) { task ->
