@@ -13,7 +13,7 @@ buildscript {
         maven { url 'https://a8c-libs.s3.amazonaws.com/android' }
     }
     dependencies {
-        classpath 'com.automattic.android:publish-to-s3:0.6.1'
+        classpath 'com.automattic.android:publish-to-s3:0.7.0'
     }
 }
 
@@ -29,15 +29,12 @@ publishing {
             artifactId = 'library'
             // version is set by `publish-to-s3` plugin in `prepareToPublishToS3` task, so it should be omitted
 
+            // This can be used for android library projects to upload the source files
+            // artifact tasks.named("androidSourcesJar")
+
             from components.java 
         }
     }
-}
-
-// This extension is currently necessary to check if the version is already published. It should match the information in MavenPublication
-publishToS3Plugin {
-    mavenPublishGroupId = 'org.gradle.sample'
-    mavenPublishArtifactId = 'library' 
 }
 ```
 
@@ -58,7 +55,7 @@ Here are the available command line arguments: `--tag-name`, `--pull-request-num
 The plugin also provides the following helper tasks:
 
 * `calculateVersionName` takes the same `--branch-name`, `--sha1`, `--tag-name` & `--pull-request-number` command line arguments and prints the calculated version name.
-* `isVersionPublishedToS3` takes  `--version-name` command line argument and combines it with the `mavenPublishGroupId` & `mavenPublishArtifactId` values from the extension to check if it's already published to S3.
+* `isVersionPublishedToS3` takes  `--version-name` command line argument and verifies that none of the publications defined for the module has already been published to S3.
 
 ### Notes
 
