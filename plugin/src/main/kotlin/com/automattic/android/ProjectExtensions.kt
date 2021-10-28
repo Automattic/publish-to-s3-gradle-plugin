@@ -17,11 +17,14 @@ fun Project.setExtraVersionName(versionName: String) {
 fun Project.getExtraVersionName() = project.extraProperties.get(EXTRA_VERSION_NAME)
 
 fun Project.setVersionForAllMavenPublications(versionName: String) {
-    project.getExtensions().getByType(PublishingExtension::class.java)
-        .publications.withType(MavenPublication::class.java).forEach {
-            it.version = versionName
-        }
+    project.allMavenPublications().forEach {
+        it.version = versionName
+    }
 }
+
+fun Project.allMavenPublications() =
+    project.getExtensions().getByType(PublishingExtension::class.java)
+        .publications.withType(MavenPublication::class.java)
 
 fun Project.addS3MavenRepository() {
     project.getExtensions().configure(PublishingExtension::class.java) { publishing ->

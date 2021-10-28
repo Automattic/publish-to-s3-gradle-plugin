@@ -12,12 +12,6 @@ abstract class PrepareToPublishToS3Task : DefaultTask() {
     @Internal
     override fun getDescription(): String = "Calculates the version name and updates maven publication version"
 
-    @get:Input
-    abstract var publishedGroupId: String
-
-    @get:Input
-    abstract var moduleName: String
-
     @Input
     @Option(option = ARG_TAG_NAME, description = "The name of the git tag, if the current build is tagged")
     var tagName: String = ""
@@ -39,10 +33,14 @@ abstract class PrepareToPublishToS3Task : DefaultTask() {
         val versionName = BuildEnvironmentArgs(tagName, branchName, sha1, pullRequestNumber)
             .process().versionName
         project.setExtraVersionName(versionName)
-        val isPublished = CheckS3Version(publishedGroupId, moduleName, versionName).check()
 
-        if (isPublished) {
-            throw IllegalStateException("'$versionName' is already published to S3!")
+        project.allMavenPublications().forEach { publication ->
+            val isPublished = CheckS3Version(publication.groupId, publication.artifactId, versionName).check()
+
+            if (isPublished) {
+                val dependency = "${publication.groupId}.${publication.artifactId}:$versionName"
+                throw IllegalStateException("'$dependency' is already published to S3!")
+            }
         }
 
         project.setVersionForAllMavenPublications(versionName)
