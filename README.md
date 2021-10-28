@@ -29,7 +29,7 @@ publishing {
             artifactId = 'library'
             // version is set by `publish-to-s3` plugin in `prepareToPublishToS3` task, so it should be omitted
 
-            // This can be used for android library projects to upload the source files
+            // This can be used for Android library projects to upload the source files
             // artifact tasks.named("androidSourcesJar")
 
             from components.java 
