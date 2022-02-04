@@ -44,7 +44,7 @@ fun Project.printPublishedVersionNameAfterPublishTasks() {
         task.doLast {
             File(project.buildDir, "published-version.txt").writeText("${project.getExtraVersionName()}")
 
-            println("Version '${project.getExtraVersionName()}' has been published succesfully.")
+            println("Version '${project.getExtraVersionName()}' has been published successfully.")
         }
     }
 }
