@@ -14,7 +14,7 @@ group = "com.automattic.android"
 version = "0.7.0"
 
 dependencies {
-    compileOnly("com.android.tools.build:gradle:4.2.2")
+    compileOnly("com.android.tools.build:gradle:7.2.1")
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
