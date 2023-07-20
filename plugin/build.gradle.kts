@@ -1,6 +1,6 @@
 plugins {
     id("java-gradle-plugin")
-    id("org.jetbrains.kotlin.jvm") version "1.4.32"
+    id("org.jetbrains.kotlin.jvm") version "1.6.10"
     id("io.gitlab.arturbosch.detekt").version("1.17.0")
     id("maven-publish")
 }
