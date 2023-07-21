@@ -17,13 +17,9 @@ class PublishToS3Plugin : Plugin<Project> {
 
         project.pluginManager.withPlugin("com.android.library") {
             project.extensions.findByType(LibraryExtension::class.java)?.let { androidLibrary ->
-                androidLibrary.sourceSets.findByName("main")?.let { mainSourceSet ->
-                    project.tasks.register("androidSourcesJar", Jar::class.java) { task ->
-                        task.description = "Creates a jar from Android library main source set " +
-                            "to be used to publish the '-sources.jar' file with the library artifacts"
-                        task.from(mainSourceSet.java.srcDirs)
-                        task.archiveClassifier.set("sources")
-                    }
+                androidLibrary.publishing.singleVariant("release") {
+                    withSourcesJar()
+                    withJavadocJar()
                 }
             }
         }
