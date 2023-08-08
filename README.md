@@ -57,6 +57,15 @@ The plugin also provides the following helper tasks:
 * `calculateVersionName` takes the same `--branch-name`, `--sha1`, `--tag-name` & `--pull-request-number` command line arguments and prints the calculated version name.
 * `isVersionPublishedToS3` takes  `--version-name` command line argument and verifies that none of the publications defined for the module has already been published to S3.
 
+There is an optional `publishToS3` extension which can be used to control whether the `sourcesJar` & `javadocJar` will be published:
+
+```
+publishToS3 {
+    shouldPublishSourcesJar = false // defaults to `true`
+    shouldPublishJavadocJar = false // defaults to `true`
+}
+```
+
 ### Notes
 
 
