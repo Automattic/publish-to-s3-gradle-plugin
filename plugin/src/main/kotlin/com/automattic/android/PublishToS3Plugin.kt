@@ -8,7 +8,7 @@ import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 
 class PublishToS3Plugin : Plugin<Project> {
     override fun apply(project: Project) {
-        applyInternal(project)
+        applyInternal(project, withSources = true)
     }
 }
 
@@ -18,7 +18,7 @@ class PublishToS3WithoutSourcesPlugin : Plugin<Project> {
     }
 }
 
-private fun applyInternal(project: Project, withSources: Boolean = true) {
+private fun applyInternal(project: Project, withSources: Boolean) {
     project.plugins.apply("maven-publish")
     project.addS3MavenRepository()
 
@@ -28,9 +28,7 @@ private fun applyInternal(project: Project, withSources: Boolean = true) {
     project.pluginManager.withPlugin("com.android.library") {
         project.extensions.findByType(LibraryExtension::class.java)?.let { androidLibrary ->
             androidLibrary.publishing.singleVariant("release") {
-                if (withSources) {
-                    withSourcesJar()
-                }
+                if (withSources) withSourcesJar()
                 withJavadocJar()
             }
         }
