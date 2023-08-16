@@ -11,7 +11,7 @@ repositories {
 }
 
 group = "com.automattic.android"
-version = "0.8.0"
+version = "0.9.0-rc-25"
 
 dependencies {
     compileOnly("com.android.tools.build:gradle:7.2.1")
@@ -33,6 +33,10 @@ gradlePlugin {
     plugins.register("publish-to-s3") {
         id = "com.automattic.android.publish-to-s3"
         implementationClass = "com.automattic.android.publish.PublishToS3Plugin"
+    }
+    plugins.register("publish-to-s3-without-sources") {
+        id = "com.automattic.android.publish-to-s3-without-sources"
+        implementationClass = "com.automattic.android.publish.PublishToS3WithoutSourcesPlugin"
     }
 }
 
