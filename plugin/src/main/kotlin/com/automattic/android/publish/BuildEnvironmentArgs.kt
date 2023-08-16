@@ -41,4 +41,3 @@ private fun requireNotNullOrEmpty(value: String?, errorMessage: String = require
     require(!value.isNullOrEmpty()) { errorMessage }
     return value
 }
-

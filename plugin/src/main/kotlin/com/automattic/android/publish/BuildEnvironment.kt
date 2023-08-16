@@ -13,5 +13,3 @@ sealed class BuildEnvironment {
         }
     }
 }
-
-
