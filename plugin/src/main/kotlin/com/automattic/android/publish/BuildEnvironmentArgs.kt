@@ -1,7 +1,5 @@
 package com.automattic.android.publish
 
-import com.automattic.android.publish.BuildEnvironment
-
 const val ARG_TAG_NAME = "tag-name"
 const val ARG_BRANCH_NAME = "branch-name"
 const val ARG_SHA1 = "sha1"

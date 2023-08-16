@@ -1,10 +1,7 @@
 package com.automattic.android.publish
 
-import com.automattic.android.publish.BuildEnvironment
-import com.automattic.android.publish.BuildEnvironmentArgs
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 private const val developBranchName = "develop"
 private const val trunkBranchName = "trunk"

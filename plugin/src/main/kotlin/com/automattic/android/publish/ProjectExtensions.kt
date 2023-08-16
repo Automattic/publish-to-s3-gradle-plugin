@@ -1,12 +1,12 @@
 package com.automattic.android.publish
 
-import java.io.File
-import java.net.URI
 import org.gradle.api.Project
+import org.gradle.api.credentials.AwsCredentials
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
-import org.gradle.api.credentials.AwsCredentials
+import java.io.File
+import java.net.URI
 
 private const val EXTRA_VERSION_NAME = "extra_version_name"
 

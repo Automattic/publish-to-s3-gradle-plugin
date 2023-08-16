@@ -3,7 +3,6 @@ package com.automattic.android.publish
 import org.gradle.testfixtures.ProjectBuilder
 import kotlin.test.Test
 import kotlin.test.assertNotNull
-import kotlin.test.assertEquals
 
 class PublishToS3PluginTest {
     @Test

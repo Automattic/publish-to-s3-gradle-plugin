@@ -1,7 +1,5 @@
 package com.automattic.android.publish
 
-import java.io.File
-import org.gradle.testkit.runner.GradleRunner
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
