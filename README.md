@@ -1,38 +1,50 @@
 # Publish-to-s3 Gradle Plugin
 
-This plugin aims to makes it easier to publish Android artifacts to our S3 repo.
-We used to store our artifacts in JCenter, but since [Bintray was shutdown](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/) we decided to store the artifacts on S3 instead.
+This plugin aims to makes it easier to publish Android artifacts to our S3 Maven repository.
 
 ### Setup
 
-In the projects's main module's `build.gradle` file (not the root `build.gradle`):
+**Use `com.automattic.android.publish-to-s3-without-sources` instead of `com.automattic.android.publish-to-s3` if the sources should not be published.**
+
+In the projects's `settings.gradle` file:
 
 ```groovy
-buildscript {
-    repositories {
-        maven { url 'https://a8c-libs.s3.amazonaws.com/android' }
+pluginManagement {
+    plugins {
+        id "com.automattic.android.publish-to-s3" version {version}
     }
-    dependencies {
-        classpath 'com.automattic.android:publish-to-s3:0.7.0'
+    repositories {
+        maven {
+            url 'https://a8c-libs.s3.amazonaws.com/android'
+            content {
+                includeGroup "com.automattic.android"
+                includeGroup "com.automattic.android.publish-to-s3"
+            }
+        }
     }
 }
+```
 
-apply plugin: 'com.automattic.android.publish-to-s3'
+In each module that needs to be published:
+
+```
+plugins {
+    id "com.automattic.android.publish-to-s3"
+}
 
 // A publication should be added following maven-publish plugin documentation: https://docs.gradle.org/current/userguide/publishing_maven.html
 // For Android artifacts, Google's documentation should be used instead: https://developer.android.com/studio/build/maven-publish-plugin
 // The main difference for Android artifacts is that they have access to `components.release`. However, it's only available after the project is evaluated, so the publishing block should be wrapped in `afterEvaluate`.
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = 'org.gradle.sample'
-            artifactId = 'library'
-            // version is set by `publish-to-s3` plugin in `prepareToPublishToS3` task, so it should be omitted
+project.afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.release
 
-            // This can be used for Android library projects to upload the source files
-            // artifact tasks.named("androidSourcesJar")
-
-            from components.java 
+                groupId = 'org.gradle.sample'
+                artifactId = 'library'
+                // version is set by `publish-to-s3` plugin in `prepareToPublishToS3` task, so it should be omitted
+            }
         }
     }
 }
