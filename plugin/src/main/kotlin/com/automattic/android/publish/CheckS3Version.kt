@@ -33,7 +33,7 @@ class CheckS3Version(
     fun check(): Boolean =
         when (responseCodeForUrl(pomUrl)) {
             SUCCESS_STATUS_CODE -> true
-            // Dependending on ACL settings S3 may return 403 or 404 for a missing file
+            // Depending on ACL settings S3 may return 403 or 404 for a missing file
             FAILURE_STATUS_CODE, FORBIDDEN_STATUS_CODE -> false
             else -> throw IllegalStateException(unexpectedStatusCodeMessage)
         }
