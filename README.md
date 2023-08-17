@@ -41,8 +41,8 @@ project.afterEvaluate {
             maven(MavenPublication) {
                 from components.release
 
-                groupId = 'org.gradle.sample'
-                artifactId = 'library'
+                groupId = 'org.gradle.sample' // change this value to the one appropriate for your library
+                artifactId = 'library' // change this value to the one appropriate for your library
                 // version is set by `publish-to-s3` plugin in `prepareToPublishToS3` task, so it should be omitted
             }
         }
