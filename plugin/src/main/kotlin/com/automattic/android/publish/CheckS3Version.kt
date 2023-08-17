@@ -8,9 +8,9 @@ private const val FORBIDDEN_STATUS_CODE = 403
 private const val FAILURE_STATUS_CODE = 404
 
 class CheckS3Version(
-    val publishedGroupId: String,
-    val moduleName: String,
-    val versionName: String
+    private val publishedGroupId: String,
+    private val moduleName: String,
+    private val versionName: String
 ) {
     private val pomUrl: String by lazy {
         "https://a8c-libs.s3.amazonaws.com/android/${publishedGroupId.replace(".", "/")}/" +
@@ -33,7 +33,7 @@ class CheckS3Version(
     fun check(): Boolean =
         when (responseCodeForUrl(pomUrl)) {
             SUCCESS_STATUS_CODE -> true
-            // Dependending on ACL settings S3 may return 403 or 404 for a missing file
+            // Depending on ACL settings S3 may return 403 or 404 for a missing file
             FAILURE_STATUS_CODE, FORBIDDEN_STATUS_CODE -> false
             else -> throw IllegalStateException(unexpectedStatusCodeMessage)
         }

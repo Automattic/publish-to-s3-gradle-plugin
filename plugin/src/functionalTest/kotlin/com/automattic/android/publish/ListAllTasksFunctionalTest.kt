@@ -1,10 +1,8 @@
 package com.automattic.android.publish
 
-import java.io.File
 import org.gradle.testkit.runner.GradleRunner
+import java.io.File
 import kotlin.test.Test
-import kotlin.test.assertTrue
-import kotlin.test.assertFalse
 
 class ListAllTasksFunctionalTest {
     @Test

@@ -1,12 +1,10 @@
 package com.automattic.android.publish
 
-import com.automattic.android.publish.BuildEnvironment
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 
 abstract class CalculateVersionNameTask : DefaultTask() {
     @Internal
@@ -33,7 +31,7 @@ abstract class CalculateVersionNameTask : DefaultTask() {
         val versionName = BuildEnvironmentArgs(tagName, branchName, sha1, pullRequestNumber)
             .process().versionName
         project.setExtraVersionName(versionName)
-        println("${versionName}")
+        println(versionName)
     }
 }
 

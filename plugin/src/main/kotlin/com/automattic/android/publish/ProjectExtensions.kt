@@ -1,12 +1,12 @@
 package com.automattic.android.publish
 
-import java.io.File
-import java.net.URI
 import org.gradle.api.Project
+import org.gradle.api.credentials.AwsCredentials
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
-import org.gradle.api.credentials.AwsCredentials
+import java.io.File
+import java.net.URI
 
 private const val EXTRA_VERSION_NAME = "extra_version_name"
 
@@ -23,17 +23,17 @@ fun Project.setVersionForAllMavenPublications(versionName: String) {
 }
 
 fun Project.allMavenPublications() =
-    project.getExtensions().getByType(PublishingExtension::class.java)
+    project.extensions.getByType(PublishingExtension::class.java)
         .publications.withType(MavenPublication::class.java)
 
 fun Project.addS3MavenRepository() {
-    project.getExtensions().configure(PublishingExtension::class.java) { publishing ->
+    project.extensions.configure(PublishingExtension::class.java) { publishing ->
         publishing.repositories.maven { mavenRepo ->
             mavenRepo.name = "s3"
             mavenRepo.url = URI("s3://a8c-libs.s3.amazonaws.com/android")
             mavenRepo.credentials(AwsCredentials::class.java) {
-                it.setAccessKey(System.getenv("AWS_ACCESS_KEY"))
-                it.setSecretKey(System.getenv("AWS_SECRET_KEY"))
+                it.accessKey = System.getenv("AWS_ACCESS_KEY")
+                it.secretKey = System.getenv("AWS_SECRET_KEY")
             }
         }
     }
