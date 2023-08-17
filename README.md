@@ -27,7 +27,7 @@ pluginManagement {
 
 In each module that needs to be published:
 
-```
+```groovy
 plugins {
     id "com.automattic.android.publish-to-s3"
 }
