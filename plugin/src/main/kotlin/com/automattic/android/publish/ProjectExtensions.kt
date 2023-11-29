@@ -5,6 +5,7 @@ import org.gradle.api.credentials.AwsCredentials
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
+import org.w3c.dom.Element
 import java.io.File
 import java.net.URI
 
@@ -19,6 +20,22 @@ fun Project.getExtraVersionName() = project.extraProperties.get(EXTRA_VERSION_NA
 fun Project.setVersionForAllMavenPublications(versionName: String) {
     project.allMavenPublications().forEach {
         it.version = versionName
+        if (it.name.endsWith("PluginMarkerMaven")) {
+            it.updatePluginMarkerPom(versionName)
+        }
+    }
+}
+
+private fun MavenPublication.updatePluginMarkerPom(
+    versionName: String
+) {
+    pom.withXml { xmlProvider ->
+        val root: Element = xmlProvider.asElement()
+        val versionTags = root.getElementsByTagName("version")
+
+        for (i in 0..versionTags.length - 1) {
+            versionTags.item(i).textContent = versionName
+        }
     }
 }
 
