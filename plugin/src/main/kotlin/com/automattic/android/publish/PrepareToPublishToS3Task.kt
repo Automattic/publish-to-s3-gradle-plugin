@@ -37,7 +37,7 @@ abstract class PrepareToPublishToS3Task : DefaultTask() {
 
             if (isPublished) {
                 val dependency = "${publication.groupId}.${publication.artifactId}:$versionName"
-                throw IllegalStateException("'$dependency' is already published to S3!")
+                error("'$dependency' is already published to S3!")
             }
         }
 
