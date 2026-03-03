@@ -1,0 +1,8 @@
+.gradle/
+build/
+!build/reports/
+*/build/
+!*/build/reports/
+!*/build/resources/
+!*/build/test-results/
+local.properties
