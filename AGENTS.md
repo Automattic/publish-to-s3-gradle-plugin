@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to coding agents when working with code in this repository.
 
 ## Project Overview
 
@@ -24,12 +24,6 @@ To run a single test class:
 
 ```bash
 ./gradlew :plugin:test --tests "com.automattic.android.publish.BuildEnvironmentTest"
-```
-
-To run a single test method:
-
-```bash
-./gradlew :plugin:test --tests "com.automattic.android.publish.BuildEnvironmentTest.given tag and branch, when getting version name, then tag takes priority"
 ```
 
 ## Architecture
@@ -71,13 +65,3 @@ The root `settings.gradle.kts` includes the plugin as a composite build (`includ
 - **S3 returns 403 for missing artifacts**: The plugin treats both 404 and 403 as "version not found" when checking S3.
 - **AWS credentials**: Publishing requires `AWS_ACCESS_KEY` and `AWS_SECRET_KEY` environment variables.
 - **No version catalog**: Dependencies use inline versions in `build.gradle.kts` (no `libs.versions.toml`).
-
-## Tech Stack
-
-| Component | Version |
-|-----------|---------|
-| Kotlin | 1.6.10 |
-| Gradle | 7.4.2 |
-| AGP (compileOnly) | 7.2.1 |
-| Detekt | 1.17.0 |
-| Java target | 1.8 |
