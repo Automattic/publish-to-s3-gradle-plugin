@@ -1,7 +1,7 @@
 plugins {
     id("java-gradle-plugin")
-    id("org.jetbrains.kotlin.jvm") version "1.6.10"
-    id("io.gitlab.arturbosch.detekt").version("1.17.0")
+    id("org.jetbrains.kotlin.jvm") version "2.2.21"
+    id("io.gitlab.arturbosch.detekt").version("1.23.8")
     id("maven-publish")
 }
 
@@ -11,7 +11,7 @@ repositories {
 }
 
 group = "com.automattic.android"
-version = "0.10.0"
+version = "0.11.0-rc1"
 
 dependencies {
     compileOnly("com.android.tools.build:gradle:7.2.1")
@@ -40,9 +40,8 @@ gradlePlugin {
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+kotlin {
+    jvmToolchain(17)
 }
 
 // Add a source set for the functional test suite

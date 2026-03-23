@@ -9,9 +9,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container:
-      image: wordpressmobile/android-build-image
     steps:
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       - uses: actions/checkout@v2
       - name: Test
         run: ./gradlew :plugin:check
