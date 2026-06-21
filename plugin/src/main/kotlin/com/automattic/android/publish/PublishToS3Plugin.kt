@@ -43,4 +43,7 @@ private fun applyInternal(project: Project, withSources: Boolean) {
     }
 
     project.printPublishedVersionNameAfterPublishTasks()
+
+    val aiDocsExtension = project.extensions.create("aiDocs", AiDocsExtension::class.java)
+    project.configureAiDocsPublishing(aiDocsExtension)
 }

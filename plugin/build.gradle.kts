@@ -38,6 +38,10 @@ gradlePlugin {
         id = "com.automattic.android.publish-to-s3-without-sources"
         implementationClass = "com.automattic.android.publish.PublishToS3WithoutSourcesPlugin"
     }
+    plugins.register("ai-docs") {
+        id = "com.automattic.android.ai-docs"
+        implementationClass = "com.automattic.android.publish.AiDocsPlugin"
+    }
 }
 
 java {
