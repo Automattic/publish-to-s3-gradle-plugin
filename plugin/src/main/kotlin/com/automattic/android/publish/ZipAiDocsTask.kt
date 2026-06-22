@@ -27,7 +27,8 @@ abstract class ZipAiDocsTask : DefaultTask() {
             sourceDir.walkTopDown()
                 .filter { it.isFile }
                 .forEach { file ->
-                    val entryPath = file.relativeTo(sourceDir).path
+                    // Use forward slashes so the ZIP layout is correct on all platforms.
+                    val entryPath = file.relativeTo(sourceDir).invariantSeparatorsPath
                     zos.putNextEntry(ZipEntry(entryPath))
                     file.inputStream().use { it.copyTo(zos) }
                     zos.closeEntry()

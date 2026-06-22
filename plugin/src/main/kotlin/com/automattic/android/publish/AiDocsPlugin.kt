@@ -14,10 +14,16 @@ private const val NOTATION_WITH_VERSION_PARTS = 3
  */
 class AiDocsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val extension = project.extensions.create("aiDocs", AiDocsExtension::class.java)
+        val extension = project.getOrCreateAiDocsExtension()
         project.configureAiDocsResolving(extension)
     }
 }
+
+// Both this consumer plugin and `com.automattic.android.publish-to-s3` register an `aiDocs`
+// extension; reuse the existing one so applying both plugins doesn't fail with a name clash.
+internal fun Project.getOrCreateAiDocsExtension(): AiDocsExtension =
+    extensions.findByType(AiDocsExtension::class.java)
+        ?: extensions.create("aiDocs", AiDocsExtension::class.java)
 
 internal fun Project.configureAiDocsPublishing(extension: AiDocsExtension) {
     afterEvaluate {

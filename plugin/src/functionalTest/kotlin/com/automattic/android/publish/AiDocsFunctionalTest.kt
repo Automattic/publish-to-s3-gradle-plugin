@@ -44,7 +44,7 @@ class AiDocsFunctionalTest {
     }
 
     @Test
-    fun `given aiDocs consumer plugin, when resolveAiDocs task is registered, then task exists`() {
+    fun `given aiDocs consumer plugin with a resolve notation, when listing tasks, then resolveAiDocs is registered`() {
         val projectDir = File("build/functionalTest-aiDocs-consumer")
         projectDir.mkdirs()
 
@@ -52,6 +52,10 @@ class AiDocsFunctionalTest {
         projectDir.resolve("build.gradle.kts").writeText("""
             plugins {
                 id("com.automattic.android.ai-docs")
+            }
+
+            aiDocs {
+                resolve("com.example:docs:1.0.0")
             }
         """.trimIndent())
 
@@ -62,7 +66,35 @@ class AiDocsFunctionalTest {
             .withProjectDir(projectDir)
             .build()
 
-        assertTrue(result.output.contains("resolveAiDocs") || !result.output.contains("resolveAiDocs"),
-            "Plugin should apply without error even with no dependencies configured")
+        assertEquals(TaskOutcome.SUCCESS, result.task(":tasks")?.outcome)
+        assertTrue(result.output.contains("resolveAiDocs"), "resolveAiDocs task should be registered")
+    }
+
+    @Test
+    fun `given both publish-to-s3 and ai-docs plugins, when configuring, then the aiDocs extension is shared`() {
+        val projectDir = File("build/functionalTest-aiDocs-both")
+        projectDir.mkdirs()
+
+        projectDir.resolve("settings.gradle").writeText("")
+        projectDir.resolve("build.gradle.kts").writeText("""
+            plugins {
+                id("com.automattic.android.publish-to-s3")
+                id("com.automattic.android.ai-docs")
+            }
+
+            aiDocs {
+                resolve("com.example:docs:1.0.0")
+            }
+        """.trimIndent())
+
+        val result = GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("tasks", "--all")
+            .withProjectDir(projectDir)
+            .build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":tasks")?.outcome)
+        assertTrue(result.output.contains("resolveAiDocs"), "resolveAiDocs task should be registered")
     }
 }

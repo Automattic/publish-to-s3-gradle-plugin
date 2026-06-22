@@ -11,6 +11,8 @@ import org.gradle.api.tasks.TaskAction
 import java.io.File
 import java.util.zip.ZipFile
 
+private const val COORDINATE_PARTS = 3
+
 abstract class ResolveAiDocsTask : DefaultTask() {
     @Internal
     override fun getDescription() = "Resolves and unpacks AI documentation from dependencies"
@@ -33,12 +35,15 @@ abstract class ResolveAiDocsTask : DefaultTask() {
 
         requestedCoordinates.get().forEach { notation ->
             val parts = notation.split(":")
-            val group = parts[0]
-            val artifact = parts[1]
-            val version = parts[2]
+            require(parts.size == COORDINATE_PARTS) {
+                "Invalid AI docs coordinate '$notation'; expected 'group:artifact:version'"
+            }
+            val (group, artifact, version) = parts
 
             val matchingArtifact = resolvedArtifacts.find {
-                it.moduleVersion.id.group == group && it.moduleVersion.id.name == artifact
+                it.moduleVersion.id.group == group &&
+                    it.moduleVersion.id.name == artifact &&
+                    it.moduleVersion.id.version == version
             } ?: run {
                 logger.warn("AI docs artifact not found for $group:$artifact:$version")
                 return@forEach
@@ -64,9 +69,14 @@ abstract class ResolveAiDocsTask : DefaultTask() {
         versionDir.exists() && versionDir.list()?.isNotEmpty() == true
 
     private fun unpackZip(zipFile: File, targetDir: File) {
+        val canonicalTarget = targetDir.canonicalFile.toPath()
         ZipFile(zipFile).use { zip ->
             zip.entries().asSequence().forEach { entry ->
                 val targetFile = File(targetDir, entry.name)
+                // Guard against "zip slip": entries must not escape the target directory.
+                require(targetFile.canonicalFile.toPath().startsWith(canonicalTarget)) {
+                    "Zip entry '${entry.name}' would extract outside '$canonicalTarget'"
+                }
                 if (entry.isDirectory) {
                     targetFile.mkdirs()
                 } else {
