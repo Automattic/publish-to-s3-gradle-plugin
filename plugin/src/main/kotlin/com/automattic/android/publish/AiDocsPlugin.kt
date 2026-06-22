@@ -69,7 +69,8 @@ internal fun Project.configureAiDocsResolving(extension: AiDocsExtension) {
         tasks.register("resolveAiDocs", ResolveAiDocsTask::class.java) { task ->
             task.aiDocsConfiguration = aiDocsConfig
             task.requestedCoordinates.set(resolvedNotations)
-            task.outputDirectory.set(rootProject.layout.projectDirectory.dir(".ai-docs"))
+            // Resolved docs are a build artifact: cleaned by `clean` and implicitly gitignored.
+            task.outputDirectory.set(rootProject.layout.buildDirectory.dir("ai-docs"))
         }
     }
 }
