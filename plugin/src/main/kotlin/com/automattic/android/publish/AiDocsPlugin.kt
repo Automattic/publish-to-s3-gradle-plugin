@@ -4,14 +4,20 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.bundling.Zip
 
 private const val AI_DOCS_CLASSIFIER = "ai-docs"
 private const val NOTATION_WITHOUT_VERSION_PARTS = 2
 private const val NOTATION_WITH_VERSION_PARTS = 3
 
 /**
- * Consumer-only plugin for resolving AI docs from S3 dependencies.
+ * Consumer-only plugin for resolving AI docs from dependency artifacts.
  * Does NOT apply maven-publish.
+ *
+ * Resolution uses the consuming project's existing repositories (e.g. the repo declared in
+ * `settings.gradle` / `dependencyResolutionManagement`). The plugin intentionally does not
+ * register its own repository, since that would fail in builds using
+ * `RepositoriesMode.FAIL_ON_PROJECT_REPOS`.
  */
 class AiDocsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -30,18 +36,22 @@ internal fun Project.configureAiDocsPublishing(extension: AiDocsExtension) {
     afterEvaluate {
         if (!extension.sourceDirectory.isPresent) return@afterEvaluate
 
-        val zipTask = tasks.register("zipAiDocs", ZipAiDocsTask::class.java) { task ->
-            task.sourceDirectory.set(extension.sourceDirectory)
-            task.outputZip.set(layout.buildDirectory.file("ai-docs/ai-docs.zip"))
+        // Gradle's Zip task gives a reproducible, cross-platform archive for free (forward-slash
+        // entries, stable order, fixed timestamps) and wires `builtBy` into the published artifact.
+        val zipTask = tasks.register("zipAiDocs", Zip::class.java) { task ->
+            task.from(extension.sourceDirectory)
+            task.destinationDirectory.set(layout.buildDirectory.dir("ai-docs"))
+            task.archiveFileName.set("ai-docs.zip")
+            task.isReproducibleFileOrder = true
+            task.isPreserveFileTimestamps = false
         }
 
         extensions.findByType(PublishingExtension::class.java)?.let { publishing ->
             publishing.publications.withType(MavenPublication::class.java).configureEach { publication ->
                 if (!publication.name.endsWith("PluginMarkerMaven")) {
-                    publication.artifact(zipTask.flatMap { it.outputZip }) {
+                    publication.artifact(zipTask.flatMap { it.archiveFile }) {
                         it.classifier = AI_DOCS_CLASSIFIER
                         it.extension = "zip"
-                        it.builtBy(zipTask)
                     }
                 }
             }

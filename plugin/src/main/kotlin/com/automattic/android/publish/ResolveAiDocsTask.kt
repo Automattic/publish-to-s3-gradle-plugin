@@ -54,19 +54,15 @@ abstract class ResolveAiDocsTask : DefaultTask() {
 
             cleanStaleVersions(artifactDir, version)
 
-            if (isUpToDate(versionDir)) {
-                logger.lifecycle("AI docs up-to-date: ${versionDir.absolutePath}")
-                return@forEach
-            }
-
+            // Always extract into a clean directory so an interrupted previous run can't leave a
+            // partial/mixed docs tree. Gradle's up-to-date check already skips the whole task when
+            // the requested coordinates and output are unchanged.
+            if (versionDir.exists()) versionDir.deleteRecursively()
             versionDir.mkdirs()
             unpackZip(matchingArtifact.file, versionDir)
             logger.lifecycle("AI docs saved to: ${versionDir.absolutePath}")
         }
     }
-
-    private fun isUpToDate(versionDir: File): Boolean =
-        versionDir.exists() && versionDir.list()?.isNotEmpty() == true
 
     private fun unpackZip(zipFile: File, targetDir: File) {
         val canonicalTarget = targetDir.canonicalFile.toPath()
