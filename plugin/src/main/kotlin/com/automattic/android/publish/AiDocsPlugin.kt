@@ -6,6 +6,7 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 
 private const val AI_DOCS_CLASSIFIER = "ai-docs"
+private const val NOTATION_WITHOUT_VERSION_PARTS = 2
 private const val NOTATION_WITH_VERSION_PARTS = 3
 
 /**
@@ -40,6 +41,7 @@ internal fun Project.configureAiDocsPublishing(extension: AiDocsExtension) {
                     publication.artifact(zipTask.flatMap { it.outputZip }) {
                         it.classifier = AI_DOCS_CLASSIFIER
                         it.extension = "zip"
+                        it.builtBy(zipTask)
                     }
                 }
             }
@@ -52,16 +54,20 @@ internal fun Project.configureAiDocsResolving(extension: AiDocsExtension) {
         val deps = extension.dependencies.getOrElse(emptyList())
         if (deps.isEmpty()) return@afterEvaluate
 
-        val aiDocsConfig = configurations.create("aiDocs") {
-            it.isTransitive = false
-            it.isCanBeConsumed = false
+        val aiDocsConfig = configurations.maybeCreate("aiDocs").apply {
+            isTransitive = false
+            isCanBeConsumed = false
         }
 
         val resolvedNotations = deps.map { notation ->
             val parts = notation.split(":")
+            require(parts.size == NOTATION_WITHOUT_VERSION_PARTS || parts.size == NOTATION_WITH_VERSION_PARTS) {
+                "Invalid AI docs dependency notation '$notation'; " +
+                    "expected 'group:artifact' or 'group:artifact:version'"
+            }
             val group = parts[0]
             val artifact = parts[1]
-            val version = if (parts.size >= NOTATION_WITH_VERSION_PARTS) {
+            val version = if (parts.size == NOTATION_WITH_VERSION_PARTS) {
                 parts[2]
             } else {
                 resolveVersionFromDependencyGraph(group, artifact)
@@ -76,7 +82,9 @@ internal fun Project.configureAiDocsResolving(extension: AiDocsExtension) {
             task.aiDocsConfiguration = aiDocsConfig
             task.requestedCoordinates.set(resolvedNotations)
             // Resolved docs are a build artifact: cleaned by `clean` and implicitly gitignored.
-            task.outputDirectory.set(rootProject.layout.buildDirectory.dir("ai-docs"))
+            // Use this project's build dir (not rootProject) so applying the plugin to multiple
+            // subprojects doesn't race on a shared output directory.
+            task.outputDirectory.set(layout.buildDirectory.dir("ai-docs"))
         }
     }
 }

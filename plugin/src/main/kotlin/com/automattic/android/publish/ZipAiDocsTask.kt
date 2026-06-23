@@ -26,6 +26,8 @@ abstract class ZipAiDocsTask : DefaultTask() {
         ZipOutputStream(outputFile.outputStream()).use { zos ->
             sourceDir.walkTopDown()
                 .filter { it.isFile }
+                // Sort by path for a deterministic ZIP (reproducible output / stable build cache).
+                .sortedBy { it.relativeTo(sourceDir).invariantSeparatorsPath }
                 .forEach { file ->
                     // Use forward slashes so the ZIP layout is correct on all platforms.
                     val entryPath = file.relativeTo(sourceDir).invariantSeparatorsPath

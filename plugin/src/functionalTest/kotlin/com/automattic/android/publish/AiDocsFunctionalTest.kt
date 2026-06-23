@@ -11,6 +11,7 @@ class AiDocsFunctionalTest {
     @Test
     fun `given aiDocs with source directory, when zipAiDocs runs, then produces zip`() {
         val projectDir = File("build/functionalTest-aiDocs")
+        projectDir.deleteRecursively()
         projectDir.mkdirs()
 
         val docsDir = File(projectDir, "docs/ai-reference")
@@ -46,6 +47,7 @@ class AiDocsFunctionalTest {
     @Test
     fun `given aiDocs consumer plugin with a resolve notation, when listing tasks, then resolveAiDocs is registered`() {
         val projectDir = File("build/functionalTest-aiDocs-consumer")
+        projectDir.deleteRecursively()
         projectDir.mkdirs()
 
         projectDir.resolve("settings.gradle").writeText("")
@@ -73,6 +75,7 @@ class AiDocsFunctionalTest {
     @Test
     fun `given both publish-to-s3 and ai-docs plugins, when configuring, then the aiDocs extension is shared`() {
         val projectDir = File("build/functionalTest-aiDocs-both")
+        projectDir.deleteRecursively()
         projectDir.mkdirs()
 
         projectDir.resolve("settings.gradle").writeText("")
