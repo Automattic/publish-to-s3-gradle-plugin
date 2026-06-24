@@ -44,7 +44,9 @@ abstract class ResolveAiDocsTask : DefaultTask() {
 
         resolved.forEach { (coordinate, zip) ->
             val parts = coordinate.split(":")
-            if (parts.size != COORDINATE_PARTS) return@forEach
+            require(parts.size == COORDINATE_PARTS) {
+                "Unexpected AI docs coordinate '$coordinate'; expected 'group:artifact:version'"
+            }
             val (group, artifact, version) = parts
 
             val artifactDir = File(outputDir, "$group/$artifact")

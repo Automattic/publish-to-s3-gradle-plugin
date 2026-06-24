@@ -77,6 +77,7 @@ internal fun Project.configureAiDocsResolving(extension: AiDocsExtension) {
         val aiDocsConfig = configurations.maybeCreate("aiDocs").apply {
             isTransitive = false
             isCanBeConsumed = false
+            isCanBeResolved = true
         }
 
         val resolvedNotations = deps.map { notation ->
@@ -129,14 +130,22 @@ private fun ArtifactCollection.toCoordinateFileMap(): Provider<Map<String, File>
     }
 
 private fun Project.resolveVersionFromDependencyGraph(group: String, artifact: String): String {
-    val matchingDep = configurations
+    val versions = configurations
         .flatMap { it.dependencies }
-        .find { it.group == group && it.name == artifact }
+        .filter { it.group == group && it.name == artifact }
+        .mapNotNull { it.version }
+        .distinct()
 
-    return matchingDep?.version
-        ?: throw IllegalStateException(
-            "Cannot resolve version for '$group:$artifact'. " +
-                "Either add it as a dependency or specify the version explicitly: " +
-                "resolve(\"$group:$artifact:VERSION\")"
+    return when (versions.size) {
+        1 -> versions.single()
+        0 -> throw IllegalStateException(
+            "Cannot determine a version for '$group:$artifact' from the dependency graph " +
+                "(it may be supplied by a platform/BOM or constraint). " +
+                "Specify it explicitly: resolve(\"$group:$artifact:VERSION\")."
         )
+        else -> throw IllegalStateException(
+            "Found multiple versions for '$group:$artifact' ($versions). " +
+                "Specify the version explicitly: resolve(\"$group:$artifact:VERSION\")."
+        )
+    }
 }
