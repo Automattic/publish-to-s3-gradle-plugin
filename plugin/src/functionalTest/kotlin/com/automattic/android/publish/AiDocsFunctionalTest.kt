@@ -42,7 +42,7 @@ class AiDocsFunctionalTest {
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":zipAiDocs")?.outcome)
 
-        val zipFile = File(projectDir, "build/ai-docs/ai-docs.zip")
+        val zipFile = File(projectDir, "build/ai-docs-archive/ai-docs.zip")
         assertTrue(zipFile.exists(), "Zip file should exist at ${zipFile.absolutePath}")
         assertTrue(zipFile.length() > 0, "Zip file should not be empty")
     }
@@ -134,7 +134,8 @@ class AiDocsFunctionalTest {
             return GradleRunner.create()
                 .forwardOutput()
                 .withPluginClasspath()
-                .withArguments("resolveAiDocs")
+                // --configuration-cache guards against carrying non-serializable values in the task.
+                .withArguments("resolveAiDocs", "--configuration-cache")
                 .withProjectDir(projectDir)
                 .build()
                 .task(":resolveAiDocs")?.outcome
@@ -153,8 +154,57 @@ class AiDocsFunctionalTest {
         )
     }
 
+    @Test
+    fun `given a dependency without an ai-docs artifact, when resolveAiDocs runs, then it succeeds with no output`() {
+        val projectDir = File("build/functionalTest-aiDocs-missing")
+        projectDir.deleteRecursively()
+        projectDir.mkdirs()
+
+        val repoDir = File(projectDir, "maven-repo")
+        // Module exists (POM) but publishes no `ai-docs` classifier artifact.
+        writePom(repoDir, "1.0.0")
+
+        projectDir.resolve("settings.gradle").writeText("")
+        projectDir.resolve("build.gradle.kts").writeText("""
+            plugins {
+                id("com.automattic.android.ai-docs")
+            }
+
+            repositories {
+                maven { url = uri("${repoDir.toURI()}") }
+            }
+
+            aiDocs {
+                resolve("com.example:docs:1.0.0")
+            }
+        """.trimIndent())
+
+        val result = GradleRunner.create()
+            .forwardOutput()
+            .withPluginClasspath()
+            .withArguments("resolveAiDocs")
+            .withProjectDir(projectDir)
+            .build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":resolveAiDocs")?.outcome)
+        assertFalse(
+            File(projectDir, "build/ai-docs/com.example").exists(),
+            "no docs should be unpacked when the dependency has no ai-docs artifact"
+        )
+    }
+
     /** Lays out a POM + docs zip at the Maven coordinate `com.example:docs:<version>:ai-docs@zip`. */
     private fun publishFakeAiDocs(repoDir: File, version: String, entry: String, content: String) {
+        val artifactDir = writePom(repoDir, version)
+        ZipOutputStream(File(artifactDir, "docs-$version-ai-docs.zip").outputStream()).use { zos ->
+            zos.putNextEntry(ZipEntry(entry))
+            zos.write(content.toByteArray())
+            zos.closeEntry()
+        }
+    }
+
+    /** Writes a minimal Maven POM for `com.example:docs:<version>` and returns its directory. */
+    private fun writePom(repoDir: File, version: String): File {
         val artifactDir = File(repoDir, "com/example/docs/$version").apply { mkdirs() }
         File(artifactDir, "docs-$version.pom").writeText(
             """
@@ -168,10 +218,6 @@ class AiDocsFunctionalTest {
             </project>
             """.trimIndent()
         )
-        ZipOutputStream(File(artifactDir, "docs-$version-ai-docs.zip").outputStream()).use { zos ->
-            zos.putNextEntry(ZipEntry(entry))
-            zos.write(content.toByteArray())
-            zos.closeEntry()
-        }
+        return artifactDir
     }
 }

@@ -2,9 +2,13 @@ package com.automattic.android.publish
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ArtifactCollection
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.provider.Provider
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Zip
+import java.io.File
 
 private const val AI_DOCS_CLASSIFIER = "ai-docs"
 private const val NOTATION_WITHOUT_VERSION_PARTS = 2
@@ -18,6 +22,8 @@ private const val NOTATION_WITH_VERSION_PARTS = 3
  * `settings.gradle` / `dependencyResolutionManagement`). The plugin intentionally does not
  * register its own repository, since that would fail in builds using
  * `RepositoriesMode.FAIL_ON_PROJECT_REPOS`.
+ *
+ * Requires Gradle 7.4+ on the consuming build (uses `ArtifactCollection.getResolvedArtifacts()`).
  */
 class AiDocsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -34,13 +40,17 @@ internal fun Project.getOrCreateAiDocsExtension(): AiDocsExtension =
 
 internal fun Project.configureAiDocsPublishing(extension: AiDocsExtension) {
     afterEvaluate {
+        // Guard on whether `aiDocs.from(...)` was called, not on directory existence: the source is
+        // often a task output (e.g. a docs-generation task) that doesn't exist yet at configuration
+        // time but will by the time `zipAiDocs` runs.
         if (!extension.sourceDirectory.isPresent) return@afterEvaluate
 
         // Gradle's Zip task gives a reproducible, cross-platform archive for free (forward-slash
         // entries, stable order, fixed timestamps) and wires `builtBy` into the published artifact.
         val zipTask = tasks.register("zipAiDocs", Zip::class.java) { task ->
             task.from(extension.sourceDirectory)
-            task.destinationDirectory.set(layout.buildDirectory.dir("ai-docs"))
+            // Own subdir so this output doesn't overlap a consumer's `build/ai-docs` resolve dir.
+            task.destinationDirectory.set(layout.buildDirectory.dir("ai-docs-archive"))
             task.archiveFileName.set("ai-docs.zip")
             task.isReproducibleFileOrder = true
             task.isPreserveFileTimestamps = false
@@ -88,8 +98,16 @@ internal fun Project.configureAiDocsResolving(extension: AiDocsExtension) {
             "$group:$artifact:$version"
         }
 
+        // Resolve leniently so a coordinate that doesn't publish an `ai-docs` artifact is skipped
+        // with a warning instead of failing the whole task.
+        val aiDocsArtifacts = aiDocsConfig.incoming.artifactView { it.lenient(true) }.artifacts
+
         tasks.register("resolveAiDocs", ResolveAiDocsTask::class.java) { task ->
-            task.aiDocsConfiguration = aiDocsConfig
+            task.description = "Resolves and unpacks AI documentation from dependencies"
+            task.aiDocsArtifactFiles.from(aiDocsArtifacts.artifactFiles)
+            // Map to coordinate -> file so the task only carries configuration-cache-serializable
+            // values (no ResolvedArtifactResult).
+            task.resolvedArtifacts.set(aiDocsArtifacts.toCoordinateFileMap())
             task.requestedCoordinates.set(resolvedNotations)
             // Resolved docs are a build artifact: cleaned by `clean` and implicitly gitignored.
             // Use this project's build dir (not rootProject) so applying the plugin to multiple
@@ -98,6 +116,17 @@ internal fun Project.configureAiDocsResolving(extension: AiDocsExtension) {
         }
     }
 }
+
+// coordinate "group:artifact:version" -> resolved file, for the (leniently resolved) ai-docs
+// artifacts. Mapped at the provider level so tasks carry only serializable values.
+private fun ArtifactCollection.toCoordinateFileMap(): Provider<Map<String, File>> =
+    resolvedArtifacts.map { artifacts ->
+        artifacts.mapNotNull { artifact ->
+            (artifact.id.componentIdentifier as? ModuleComponentIdentifier)?.let { id ->
+                "${id.group}:${id.module}:${id.version}" to artifact.file
+            }
+        }.toMap()
+    }
 
 private fun Project.resolveVersionFromDependencyGraph(group: String, artifact: String): String {
     val matchingDep = configurations
